@@ -1,10 +1,12 @@
 // src/pages/Login.jsx
 import "../App.css";
 import "./Login.css";
+import { Link } from "react-router-dom";
+
 
 function Login() {
   return (
-    <div className="login-page">
+    <div className="login-page slide-left">
       <div className="login-container">
         {/* Lado esquerdo - laranja */}
         <div className="login-left">
@@ -76,9 +78,9 @@ function Login() {
               {/* Create account */}
               <p className="create-account">
                 Don’t have an account ?{" "}
-                <button type="button" className="link-button">
+                <Link to="/register" className="link-button">
                   Create one
-                </button>
+                </Link>
               </p>
             </form>
           </div>

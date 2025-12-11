@@ -40,3 +40,35 @@
 .read-the-docs {
   color: #888;
 }
+
+/* ANIMAÇÕES SUAVES ENTRE LOGIN E REGISTER */
+
+.slide-left {
+  animation: slideInLeft 0.45s ease forwards;
+}
+
+.slide-right {
+  animation: slideInRight 0.45s ease forwards;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
