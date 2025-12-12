@@ -1,7 +1,20 @@
 // src/pages/Dashboard.jsx
 import "./Dashboard.css";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
+  const navigate = useNavigate();
+
+  // 🔐 PROTEÇÃO DO DASHBOARD
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      navigate("/login");
+    }
+  }, [navigate]);
+
   return (
     <div className="dashboard-page">
       {/* HEADER */}

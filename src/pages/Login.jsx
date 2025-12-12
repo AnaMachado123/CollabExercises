@@ -1,83 +1,86 @@
-// src/pages/Login.jsx
 import "../App.css";
 import "./Login.css";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { apiRequest } from "../services/api";
 
 function Login() {
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    try {
+      const data = await apiRequest("/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password })
+      });
+
+      localStorage.setItem("token", data.token);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message || "Invalid credentials");
+    }
+  };
+
   return (
     <div className="login-page slide-left">
       <div className="login-container">
-        {/* Lado esquerdo - laranja */}
+        {/* LEFT */}
         <div className="login-left">
           <div className="logo">
             <div className="logo-icon">
               <span className="logo-cap">
                 <i className="fa-solid fa-graduation-cap"></i>
-                </span>
+              </span>
             </div>
             <span className="logo-text">CollabExercises</span>
           </div>
 
           <div className="welcome-text">
-            <h1>Welcome Back !</h1>
-            <p>
-              Share exercises, explore solutions and learn in a collaborative
-              way.
-            </p>
+            <h1>Welcome Back!</h1>
+            <p>Share exercises, explore solutions and learn collaboratively.</p>
           </div>
         </div>
 
-        {/* Lado direito - formulário */}
+        {/* RIGHT */}
         <div className="login-right">
           <div className="login-card">
             <h2>Welcome Back</h2>
             <p className="subtitle">Sign in to CollabExercises</p>
 
-            <form>
-              {/* Email */}
+            {error && <p className="error-text">{error}</p>}
+
+            <form onSubmit={handleSubmit}>
               <div className="field-group">
                 <label>Email</label>
                 <div className="input-wrapper">
                   <span className="input-icon">@</span>
-                  <input
-                    type="email"
-                    placeholder="student@university.pt"
-                  />
+                  <input name="email" type="email" required />
                 </div>
               </div>
 
-              {/* Password */}
               <div className="field-group">
                 <label>Password</label>
                 <div className="input-wrapper">
-                 <span className="input-icon">
+                  <span className="input-icon">
                     <i className="fa-solid fa-lock"></i>
-                </span>
-                  <input type="password" placeholder="••••••••••" />
+                  </span>
+                  <input name="password" type="password" required />
                 </div>
               </div>
 
-              {/* Remember + forgot */}
-              <div className="extras-row">
-                <label className="remember">
-                  <input type="checkbox" />
-                  <span>Remember me</span>
-                </label>
-
-                <button type="button" className="link-button">
-                  Forgot password ?
-                </button>
-              </div>
-
-              {/* Botão login */}
               <button type="submit" className="primary-button">
                 Log in
               </button>
 
-              {/* Create account */}
               <p className="create-account">
-                Don’t have an account ?{" "}
+                Don’t have an account?{" "}
                 <Link to="/register" className="link-button">
                   Create one
                 </Link>

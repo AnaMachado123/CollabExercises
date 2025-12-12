@@ -3,9 +3,67 @@ import "../App.css";
 import "./Login.css";
 import "./Register.css";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Register() {
+  const navigate = useNavigate();
+
+  // 🔹 states (NÃO afetam layout)
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [error, setError] = useState("");
+
+  // 🔹 submit handler
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!name || !email || !password || !confirmPassword) {
+      setError("All fields are required");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (!acceptedTerms) {
+      setError("You must accept the terms and conditions");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:3000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Registration failed");
+        return;
+      }
+
+      // ✅ sucesso → vai para login
+      navigate("/login");
+    } catch (err) {
+      setError("Server error. Please try again later.");
+    }
+  };
+
   return (
     <div className="login-page register-page slide-right">
       <div className="login-container">
@@ -15,7 +73,10 @@ function Register() {
             <h2>Create your account</h2>
             <p className="subtitle">Join the collaborative learning community</p>
 
-            <form>
+            {/* 🔹 erro (não mexe layout) */}
+            {error && <p className="error-text">{error}</p>}
+
+            <form onSubmit={handleRegister}>
               {/* Full name */}
               <div className="field-group">
                 <label>Full name</label>
@@ -23,7 +84,12 @@ function Register() {
                   <span className="input-icon">
                     <i className="fa-solid fa-user"></i>
                   </span>
-                  <input type="text" placeholder="name" />
+                  <input
+                    type="text"
+                    placeholder="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
                 </div>
               </div>
 
@@ -37,6 +103,8 @@ function Register() {
                   <input
                     type="email"
                     placeholder="student@university.pt"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
@@ -48,7 +116,12 @@ function Register() {
                   <span className="input-icon">
                     <i className="fa-solid fa-lock"></i>
                   </span>
-                  <input type="password" placeholder="••••••••••" />
+                  <input
+                    type="password"
+                    placeholder="••••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
               </div>
 
@@ -59,14 +132,23 @@ function Register() {
                   <span className="input-icon">
                     <i className="fa-solid fa-lock"></i>
                   </span>
-                  <input type="password" placeholder="••••••••••" />
+                  <input
+                    type="password"
+                    placeholder="••••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
                 </div>
               </div>
 
               {/* Terms */}
               <div className="terms-row">
                 <label>
-                  <input type="checkbox" />
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  />
                   <span>I accept the terms and the conditions</span>
                 </label>
               </div>
