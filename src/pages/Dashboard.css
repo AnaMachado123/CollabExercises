@@ -169,7 +169,7 @@
   width: 100%;
   max-width: 850px;
   min-height: 239px;   /* deixa crescer se o texto for maior */
-  height: auto;        /* MUITO IMPORTANTE */
+  height: auto;        
   background: #ffffff;
   border-radius: 20px;
   padding: 25px;
