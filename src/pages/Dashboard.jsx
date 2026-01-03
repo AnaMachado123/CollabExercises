@@ -11,11 +11,13 @@ function Dashboard() {
   const initials =
     user?.name?.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase() || "??";
 
-  // ✅ states para exercícios
+  //  states
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("All");
+  const [search, setSearch] = useState(""); 
+  const [difficulty, setDifficulty] = useState("All");
 
 
   useEffect(() => {
@@ -25,32 +27,34 @@ function Dashboard() {
       navigate("/login");
       return;
     }
+  }, [navigate]);
 
+  //  FETCH com search + subject
+  useEffect(() => {
     const fetchExercises = async () => {
       try {
         setLoading(true);
         setError("");
-        const data = await apiRequest("/exercises"); // GET /api/exercises
+
+        const params = new URLSearchParams();
+        if (search) params.append("search", search);
+        if (selectedSubject !== "All") params.append("subject", selectedSubject);
+
+        const data = await apiRequest(`/exercises?${params.toString()}`);
         setExercises(data);
       } catch (err) {
-        setError(err.message);
+        setError(err.message || "Failed to load exercises");
       } finally {
         setLoading(false);
       }
     };
 
     fetchExercises();
-  }, [navigate]);
+  }, [search, selectedSubject]);
 
   const subjects = ["All", ...new Set(
     exercises.map(e => e.subject).filter(Boolean)
   )];
-
-  const filteredExercises = exercises.filter(
-    ex => selectedSubject === "All" || ex.subject === selectedSubject
-  );
-
-
 
   return (
     <div className="dashboard-page">
@@ -82,10 +86,15 @@ function Dashboard() {
       <main className="dashboard-main">
         {/* LADO ESQUERDO */}
         <section className="dashboard-left">
-          {/* Search */}
+          {/*  Search */}
           <div className="dashboard-search">
             <i className="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search Exercises..." />
+            <input
+              type="text"
+              placeholder="Search Exercises..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
 
           {/* Filtros */}
@@ -102,13 +111,12 @@ function Dashboard() {
             ))}
           </div>
 
-
-          {/* ✅ ESTADOS */}
+          {/* Estados */}
           {loading && <p>Loading exercises...</p>}
           {error && <p className="error-text">{error}</p>}
 
-          {/* ✅ LISTA REAL */}
-          {!loading && !error && filteredExercises.map((ex) => (
+          {/* Lista */}
+          {!loading && !error && exercises.map((ex) => (
             <article className="exercise-card" key={ex._id}>
               <div className="exercise-card-body">
                 <h3 className="exercise-title">{ex.title}</h3>
@@ -122,7 +130,10 @@ function Dashboard() {
                     </span>
                   )}
                 </div>
-                <p className="exercise-description clamp-3">{ex.description}</p>
+
+                <p className="exercise-description clamp-3">
+                  {ex.description}
+                </p>
               </div>
 
               <div className="exercise-card-footer">
@@ -138,14 +149,18 @@ function Dashboard() {
                   </span>
                 </div>
 
-                <button className="exercise-button">View exercise</button>
+                <button
+                className="exercise-button"
+                onClick={() => navigate(`/exercises/${ex._id}`)}
+                >
+                    View exercise
+                </button>
               </div>
             </article>
           ))}
 
-          {/* caso não haja exercícios */}
-          {!loading && !error && filteredExercises.length === 0 && (
-              <p>No exercises yet. Create the first one</p>
+          {!loading && !error && exercises.length === 0 && (
+            <p>No exercises found</p>
           )}
         </section>
 
@@ -159,9 +174,13 @@ function Dashboard() {
               learn together
             </p>
 
-            <button className="share-button">
-              <span>+ Post new&nbsp;exercise</span>
+            <button
+              className="share-button"
+              onClick={() => navigate("/exercises/new")}
+           >
+            <span>+ Post new&nbsp;exercise</span>
             </button>
+
           </section>
 
           <section className="activity-card">
@@ -172,7 +191,6 @@ function Dashboard() {
               <h3>Recent activity</h3>
             </div>
 
-            {/* isto fica fake por agora */}
             <div className="activity-item">
               <div className="activity-line">
                 <span className="activity-name">Maria Santos</span>

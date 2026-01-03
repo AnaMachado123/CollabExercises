@@ -1,0 +1,150 @@
+/* PAGE */
+.view-page {
+  background: #fafafa;
+  min-height: 100vh;
+  padding: 40px 0;
+  font-family: "Poppins", sans-serif;
+}
+
+/* CONTAINER */
+.view-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 36px 42px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* BREADCRUMB */
+.breadcrumb {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 18px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.breadcrumb span {
+  cursor: pointer;
+}
+
+.breadcrumb .separator {
+  cursor: default;
+}
+
+.breadcrumb .active {
+  color: #f97316;
+  font-weight: 500;
+  cursor: default;
+}
+
+/* TITLE */
+.view-title {
+  font-size: 30px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1f2933;
+}
+
+/* TAGS */
+.view-tags {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pill {
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pill.subject {
+  background: #f97316;
+  color: white;
+}
+
+.pill.difficulty {
+  background: #f3f4f6;
+  color: #444;
+}
+
+/* META */
+.view-meta {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 18px;
+}
+
+/* METRICS */
+.view-metrics {
+  display: flex;
+  gap: 22px;
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 30px;
+}
+
+/* GRID */
+.view-grid {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 32px;
+}
+
+/* DESCRIPTION */
+.view-description h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.view-description p {
+  line-height: 1.6;
+  color: #444;
+}
+
+/* ATTACHMENTS */
+.view-attachments {
+  background: #fafafa;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.view-attachments h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.attachment {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: white;
+  margin-bottom: 10px;
+  text-decoration: none;
+  color: #333;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: 0.2s ease;
+}
+
+.attachment:hover {
+  background: #fff7ed;
+}
+
+.empty {
+  font-size: 13px;
+  color: #999;
+}
+
+/* BACK */
+.back-btn {
+  margin-top: 30px;
+  background: none;
+  border: none;
+  color: #f97316;
+  cursor: pointer;
+  font-size: 14px;
+}
