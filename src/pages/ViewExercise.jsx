@@ -26,7 +26,6 @@ function ViewExercise() {
     fetchExercise();
   }, [id]);
 
-  /* LOADING STATE */
   if (loading) {
     return (
       <div className="view-page">
@@ -34,7 +33,6 @@ function ViewExercise() {
           <div className="sk-title"></div>
           <div className="sk-tags"></div>
           <div className="sk-meta"></div>
-
           <div className="sk-grid">
             <div className="sk-block"></div>
             <div className="sk-block"></div>
@@ -82,13 +80,11 @@ function ViewExercise() {
 
         {/* MAIN CONTENT */}
         <div className="view-grid">
-          {/* DESCRIPTION */}
           <section className="view-description">
             <h3>Description</h3>
             <p>{exercise.description}</p>
           </section>
 
-          {/* ATTACHMENTS */}
           <aside className="view-attachments">
             <h3>Attached files</h3>
 
@@ -100,9 +96,9 @@ function ViewExercise() {
               <a
                 key={index}
                 className="attachment"
-                href={`http://localhost:3000/${file.path}`}
+                href={file.url}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 {file.originalName}
               </a>
@@ -110,7 +106,6 @@ function ViewExercise() {
           </aside>
         </div>
 
-        {/* BACK */}
         <button className="back-btn" onClick={() => navigate(-1)}>
           ← Back
         </button>
