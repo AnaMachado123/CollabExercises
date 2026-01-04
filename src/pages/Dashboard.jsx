@@ -1,35 +1,38 @@
 // src/pages/Dashboard.jsx
 import "./Dashboard.css";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { apiRequest } from "../services/api";
 
 function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const user = JSON.parse(localStorage.getItem("user") || "null");
   const initials =
-    user?.name?.split(" ").slice(0, 2).map(w => w[0]).join("").toUpperCase() || "??";
+    user?.name
+      ?.split(" ")
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase() || "??";
 
-  //  states
+  // states
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("All");
-  const [search, setSearch] = useState(""); 
-  const [difficulty, setDifficulty] = useState("All");
+  const [search, setSearch] = useState("");
 
-
+  // auth guard
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (!token) {
       navigate("/login");
-      return;
     }
   }, [navigate]);
 
-  //  FETCH com search + subject
+  // fetch exercises
   useEffect(() => {
     const fetchExercises = async () => {
       try {
@@ -38,7 +41,8 @@ function Dashboard() {
 
         const params = new URLSearchParams();
         if (search) params.append("search", search);
-        if (selectedSubject !== "All") params.append("subject", selectedSubject);
+        if (selectedSubject !== "All")
+          params.append("subject", selectedSubject);
 
         const data = await apiRequest(`/exercises?${params.toString()}`);
         setExercises(data);
@@ -52,13 +56,14 @@ function Dashboard() {
     fetchExercises();
   }, [search, selectedSubject]);
 
-  const subjects = ["All", ...new Set(
-    exercises.map(e => e.subject).filter(Boolean)
-  )];
+  const subjects = [
+    "All",
+    ...new Set(exercises.map((e) => e.subject).filter(Boolean)),
+  ];
 
   return (
     <div className="dashboard-page">
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
       <header className="dashboard-header">
         <div className="dashboard-logo">
           <div className="dashboard-logo-icon">
@@ -69,10 +74,49 @@ function Dashboard() {
 
         <div className="header-center">
           <nav className="dashboard-nav">
-            <button className="nav-link nav-link--active">Home</button>
-            <button className="nav-link">My Exercises</button>
-            <button className="nav-link">My Solutions</button>
-            <button className="nav-link">My Saved</button>
+            <button
+              className={`nav-link ${
+                location.pathname === "/dashboard" ? "nav-link--active" : ""
+              }`}
+              onClick={() => navigate("/dashboard")}
+              type="button"
+            >
+              Home
+            </button>
+
+            <button
+              className={`nav-link ${
+                location.pathname === "/my-exercises"
+                  ? "nav-link--active"
+                  : ""
+              }`}
+              onClick={() => navigate("/my-exercises")}
+              type="button"
+            >
+              My Exercises
+            </button>
+
+            <button
+              className={`nav-link ${
+                location.pathname === "/my-solutions"
+                  ? "nav-link--active"
+                  : ""
+              }`}
+              onClick={() => navigate("/my-solutions")}
+              type="button"
+            >
+              My Solutions
+            </button>
+
+            <button
+              className={`nav-link ${
+                location.pathname === "/my-saved" ? "nav-link--active" : ""
+              }`}
+              onClick={() => navigate("/my-saved")}
+              type="button"
+            >
+              My Saved
+            </button>
           </nav>
         </div>
 
@@ -83,11 +127,11 @@ function Dashboard() {
         </div>
       </header>
 
-      {/* MAIN */}
+      {/* ================= MAIN ================= */}
       <main className="dashboard-main">
-        {/* LADO ESQUERDO */}
+        {/* LEFT */}
         <section className="dashboard-left">
-          {/*  Search */}
+          {/* Search */}
           <div className="dashboard-search">
             <i className="fa-solid fa-magnifying-glass"></i>
             <input
@@ -98,12 +142,14 @@ function Dashboard() {
             />
           </div>
 
-          {/* Filtros */}
+          {/* Filters */}
           <div className="dashboard-filters">
             {subjects.map((subj) => (
               <button
                 key={subj}
-                className={`filter-pill ${selectedSubject === subj ? "filter-pill--active" : ""}`}
+                className={`filter-pill ${
+                  selectedSubject === subj ? "filter-pill--active" : ""
+                }`}
                 onClick={() => setSelectedSubject(subj)}
                 type="button"
               >
@@ -112,60 +158,67 @@ function Dashboard() {
             ))}
           </div>
 
-          {/* Estados */}
+          {/* States */}
           {loading && <p>Loading exercises...</p>}
           {error && <p className="error-text">{error}</p>}
 
-          {/* Lista */}
-          {!loading && !error && exercises.map((ex) => (
-            <article className="exercise-card" key={ex._id}>
-              <div className="exercise-card-body">
-                <h3 className="exercise-title">{ex.title}</h3>
+          {/* Exercise list */}
+          {!loading &&
+            !error &&
+            exercises.map((ex) => (
+              <article className="exercise-card" key={ex._id}>
+                <div className="exercise-card-body">
+                  <h3 className="exercise-title">{ex.title}</h3>
 
-                <div className="exercise-tags-row">
-                  <span className="exercise-tag">{ex.subject}</span>
+                  <div className="exercise-tags-row">
+                    <span className="exercise-tag">{ex.subject}</span>
 
-                  {ex.difficulty && (
-                    <span className={`exercise-tag difficulty-pill difficulty-${ex.difficulty.toLowerCase()}`}>
-                      {ex.difficulty}
+                    {ex.difficulty && (
+                      <span
+                        className={`exercise-tag difficulty-pill difficulty-${ex.difficulty.toLowerCase()}`}
+                      >
+                        {ex.difficulty}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="exercise-description clamp-3">
+                    {ex.description}
+                  </p>
+                </div>
+
+                <div className="exercise-card-footer">
+                  <div className="exercise-metrics">
+                    <span>
+                      <i className="fa-regular fa-bookmark"></i>{" "}
+                      {ex.savesCount ?? 0}
                     </span>
-                  )}
-                </div>
+                    <span>
+                      <i className="fa-regular fa-comment"></i>{" "}
+                      {ex.commentsCount ?? 0}
+                    </span>
+                    <span>
+                      <i className="fa-regular fa-lightbulb"></i>{" "}
+                      {ex.solutionsCount ?? 0} Solutions
+                    </span>
+                  </div>
 
-                <p className="exercise-description clamp-3">
-                  {ex.description}
-                </p>
-              </div>
-
-              <div className="exercise-card-footer">
-                <div className="exercise-metrics">
-                  <span>
-                    <i className="fa-regular fa-bookmark"></i> {ex.savesCount ?? 0}
-                  </span>
-                  <span>
-                    <i className="fa-regular fa-comment"></i> {ex.commentsCount ?? 0}
-                  </span>
-                  <span>
-                    <i className="fa-regular fa-lightbulb"></i> {ex.solutionsCount ?? 0} Solutions
-                  </span>
-                </div>
-
-                <button
-                className="exercise-button"
-                onClick={() => navigate(`/exercises/${ex._id}`)}
-                >
+                  <button
+                    className="exercise-button"
+                    onClick={() => navigate(`/exercises/${ex._id}`)}
+                  >
                     View exercise
-                </button>
-              </div>
-            </article>
-          ))}
+                  </button>
+                </div>
+              </article>
+            ))}
 
           {!loading && !error && exercises.length === 0 && (
             <p>No exercises found</p>
           )}
         </section>
 
-        {/* LADO DIREITO */}
+        {/* RIGHT */}
         <aside className="dashboard-right">
           <section className="share-card">
             <h2>Share your knowledge</h2>
@@ -178,10 +231,9 @@ function Dashboard() {
             <button
               className="share-button"
               onClick={() => navigate("/exercises/new")}
-           >
-            <span>+ Post new&nbsp;exercise</span>
+            >
+              + Post new exercise
             </button>
-
           </section>
 
           <section className="activity-card">
