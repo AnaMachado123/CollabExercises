@@ -30,6 +30,14 @@ function timeAgo(dateString) {
 export default function MySaved() {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  const [openUserMenu, setOpenUserMenu] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
 
   const user = JSON.parse(localStorage.getItem("user") || "null");
   const initials =
@@ -43,19 +51,19 @@ export default function MySaved() {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
 
-  // ✅ guard de auth igual ao dashboard
+  //  guard de auth igual ao dashboard
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) navigate("/login");
   }, [navigate]);
 
-  // ✅ BACK MODE (liga ao endpoint)
+  //  BACK MODE (liga ao endpoint)
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
 
-        // ✅ Ajusta aqui se o teu endpoint for diferente:
+        //  Ajusta aqui se o teu endpoint for diferente:
         // exemplos: "/saved/mine" | "/exercises/saved" | "/saved"
         const data = await apiRequest("/saved/mine");
 
@@ -165,11 +173,31 @@ export default function MySaved() {
           </nav>
         </div>
 
-        <div className="header-right">
-          <div className="dashboard-user-circle" title={user?.name}>
+        <div className="header-right" style={{ position: "relative" }}>
+          <div
+            className={`dashboard-user-circle ${openUserMenu ? "user-open" : ""}`}
+            title={user?.name}
+            onClick={() => setOpenUserMenu((v) => !v)}
+            role="button"
+            tabIndex={0}
+          >
             {initials}
           </div>
+
+          {/* ✅ fica sempre no DOM para animar */}
+          <div className={`user-dropdown ${openUserMenu ? "open" : ""}`}>
+            <button type="button" onClick={() => navigate("/profile")}>
+              <i className="fa-regular fa-user" />
+              Profile
+            </button>
+
+            <button type="button" className="danger" onClick={handleLogout}>
+              <i className="fa-solid fa-arrow-right-from-bracket" />
+              Logout
+            </button>
+          </div>
         </div>
+
       </header>
 
       {/* ✅ CONTENT */}
