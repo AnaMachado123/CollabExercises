@@ -1,6 +1,6 @@
 // src/pages/ViewExercise.jsx
 import "./ViewExercise.css";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiRequest } from "../services/api";
 
@@ -11,6 +11,83 @@ function ViewExercise() {
   const [exercise, setExercise] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ✅ Saved (front-only for now)
+  const [isSaved, setIsSaved] = useState(false);
+  const [savePop, setSavePop] = useState(false);
+
+  // ✅ Comments
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [posting, setPosting] = useState(false);
+
+  // ✅ Solutions
+  const [solutions, setSolutions] = useState([]);
+  const [solutionsLoading, setSolutionsLoading] = useState(false);
+  const [solutionNotes, setSolutionNotes] = useState("");
+  const [solutionFiles, setSolutionFiles] = useState([]);
+  const [postingSolution, setPostingSolution] = useState(false);
+
+  const commentsRef = useRef(null);
+
+  const solutionsRef = useRef(null);
+  const solutionFileInputRef = useRef(null);
+
+  // ✅ attachments UI (comments)
+  const [commentFiles, setCommentFiles] = useState([]);
+  const fileInputRef = useRef(null);
+
+  // ✅ load saved state from localStorage (per exercise)
+  useEffect(() => {
+    if (!id) return;
+    const key = `collab_saved_exercise_${id}`;
+    setIsSaved(localStorage.getItem(key) === "1");
+  }, [id]);
+
+  const toggleSaved = () => {
+    if (!id) return;
+    const key = `collab_saved_exercise_${id}`;
+    const next = !isSaved;
+    setIsSaved(next);
+    localStorage.setItem(key, next ? "1" : "0");
+
+    // pop animation on save (only when saving, not unsaving)
+    if (next) {
+      setSavePop(true);
+      window.setTimeout(() => setSavePop(false), 320);
+    }
+  };
+
+  // ✅ difficulty class (bulletproof)
+  const difficultyClass = useMemo(() => {
+    const raw = (exercise?.difficulty || "").toString().toLowerCase();
+    if (raw.includes("begin")) return "difficulty-beginner";
+    if (raw.includes("inter")) return "difficulty-intermediate";
+    if (raw.includes("adv")) return "difficulty-advanced";
+    return "";
+  }, [exercise?.difficulty]);
+
+  // counts (fallback para listas)
+  const commentsCount = useMemo(() => {
+    const n = exercise?.commentsCount;
+    if (typeof n === "number") return n;
+    return comments.length;
+  }, [exercise, comments.length]);
+
+  const solutionsCount = useMemo(() => {
+    const n = exercise?.solutionsCount;
+    if (typeof n === "number") return n;
+    return solutions.length;
+  }, [exercise, solutions.length]);
+
+  // saved count (enquanto não há back: mostra 1/0 para este user)
+  const savedCount = useMemo(() => {
+    const n = exercise?.savesCount ?? exercise?.savedCount; // se o back tiver outro nome
+    if (typeof n === "number") return n;
+    return isSaved ? 1 : 0;
+  }, [exercise, isSaved]);
+
+  // ✅ Fetch exercise
   useEffect(() => {
     const fetchExercise = async () => {
       try {
@@ -25,6 +102,135 @@ function ViewExercise() {
 
     fetchExercise();
   }, [id]);
+
+  // ✅ Fetch comments
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchComments = async () => {
+      setCommentsLoading(true);
+      try {
+        const data = await apiRequest(`/exercises/${id}/comments`);
+        setComments(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.warn("Comments endpoint not ready yet:", err?.message || err);
+        setComments([]);
+      } finally {
+        setCommentsLoading(false);
+      }
+    };
+
+    fetchComments();
+  }, [id]);
+
+  // ✅ Fetch solutions
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchSolutions = async () => {
+      setSolutionsLoading(true);
+      try {
+        const data = await apiRequest(`/exercises/${id}/solutions`);
+        setSolutions(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.warn("Solutions endpoint not ready yet:", err?.message || err);
+        setSolutions([]);
+      } finally {
+        setSolutionsLoading(false);
+      }
+    };
+
+    fetchSolutions();
+  }, [id]);
+
+  // scroll helpers
+  const handleScrollToComments = () => {
+    commentsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleScrollToSolutions = () => {
+    solutionsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  // ✅ comment files UI
+  const openFilePicker = () => fileInputRef.current?.click();
+
+  const onPickFiles = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setCommentFiles((prev) => [...prev, ...files]);
+    e.target.value = "";
+  };
+
+  const removePickedFile = (index) => {
+    setCommentFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ✅ solution files UI
+  const openSolutionFilePicker = () => solutionFileInputRef.current?.click();
+
+  const onPickSolutionFiles = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setSolutionFiles((prev) => [...prev, ...files]);
+    e.target.value = "";
+  };
+
+  const removeSolutionFile = (index) => {
+    setSolutionFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // ✅ Post comment (placeholder)
+  const handlePostComment = async () => {
+    const text = newComment.trim();
+    if (!text) return;
+
+    setPosting(true);
+
+    try {
+      const created = await apiRequest(`/exercises/${id}/comments`, {
+        method: "POST",
+        body: JSON.stringify({ text }),
+      });
+
+      setComments((prev) => [created, ...prev]);
+      setNewComment("");
+      setCommentFiles([]);
+    } catch (err) {
+      console.error(err);
+      alert("Ainda não dá para publicar comentário (falta ligar o back). UI está pronta 😉");
+    } finally {
+      setPosting(false);
+    }
+  };
+
+  // ✅ Post solution (placeholder) — texto e/ou ficheiros
+  const handlePostSolution = async () => {
+    const notes = solutionNotes.trim();
+
+    if (!notes && solutionFiles.length === 0) {
+      alert("Write something or attach at least one file 🙂");
+      return;
+    }
+
+    setPostingSolution(true);
+
+    try {
+      const created = await apiRequest(`/exercises/${id}/solutions`, {
+        method: "POST",
+        body: JSON.stringify({ notes }),
+      });
+
+      setSolutions((prev) => [created, ...prev]);
+      setSolutionNotes("");
+      setSolutionFiles([]);
+    } catch (err) {
+      console.error(err);
+      alert("Ainda não dá para submeter solução (falta ligar o back). UI está pronta 😉");
+    } finally {
+      setPostingSolution(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -56,13 +262,28 @@ function ViewExercise() {
           <span className="active">{exercise.title}</span>
         </div>
 
-        {/* TITLE */}
-        <h1 className="view-title">{exercise.title}</h1>
+        {/* TITLE + SAVE */}
+        <div className="view-title-row">
+          <h1 className="view-title">{exercise.title}</h1>
+
+          <button
+            type="button"
+            className={`bookmark-btn ${isSaved ? "saved" : ""} ${savePop ? "pop" : ""}`}
+            onClick={toggleSaved}
+            aria-label={isSaved ? "Unsave exercise" : "Save exercise"}
+            title={isSaved ? "Saved" : "Save"}
+          >
+            <i className={isSaved ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"}></i>
+          </button>
+        </div>
 
         {/* TAGS */}
         <div className="view-tags">
           <span className="pill subject">{exercise.subject}</span>
-          <span className="pill difficulty">{exercise.difficulty}</span>
+
+          <span className={`pill difficulty difficulty-pill ${difficultyClass}`}>
+            {exercise.difficulty}
+          </span>
         </div>
 
         {/* META */}
@@ -73,9 +294,15 @@ function ViewExercise() {
 
         {/* METRICS */}
         <div className="view-metrics">
-          <span>{exercise.upvotes ?? 0} likes</span>
-          <span>{exercise.commentsCount ?? 0} comments</span>
-          <span>{exercise.solutionsCount ?? 0} solutions</span>
+          <span>{savedCount ?? 0} saved</span>
+
+          <button type="button" className="metric-link" onClick={handleScrollToComments}>
+            {commentsCount ?? 0} comments
+          </button>
+
+          <button type="button" className="metric-link" onClick={handleScrollToSolutions}>
+            {solutionsCount ?? 0} solutions
+          </button>
         </div>
 
         {/* MAIN CONTENT */}
@@ -88,9 +315,7 @@ function ViewExercise() {
           <aside className="view-attachments">
             <h3>Attached files</h3>
 
-            {exercise.attachments.length === 0 && (
-              <p className="empty">No attachments</p>
-            )}
+            {exercise.attachments.length === 0 && <p className="empty">No attachments</p>}
 
             {exercise.attachments.map((file, index) => (
               <a
@@ -105,6 +330,212 @@ function ViewExercise() {
             ))}
           </aside>
         </div>
+
+        {/* ✅ COMMENTS */}
+        <section className="comments-section" ref={commentsRef}>
+          <div className="comments-header">
+            <h3>Comments</h3>
+            <span className="comments-count">{commentsCount ?? 0}</span>
+          </div>
+
+          <div className="comment-form">
+            <div className="comment-avatar">U</div>
+
+            <div className="comment-inputs">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                className="comment-file-input"
+                onChange={onPickFiles}
+              />
+
+              <div className="comment-textarea-wrap">
+                <textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Ask a question or leave feedback…"
+                  rows={3}
+                />
+
+                <button
+                  type="button"
+                  className="comment-attach-btn"
+                  onClick={openFilePicker}
+                  aria-label="Attach files"
+                  title="Attach files"
+                >
+                  <i className="fa-solid fa-paperclip"></i>
+                </button>
+              </div>
+
+              {commentFiles.length > 0 && (
+                <div className="comment-files">
+                  {commentFiles.map((f, idx) => (
+                    <div className="file-chip" key={`${f.name}-${idx}`}>
+                      <span className="file-chip-name">{f.name}</span>
+                      <button
+                        type="button"
+                        className="file-chip-remove"
+                        onClick={() => removePickedFile(idx)}
+                        aria-label="Remove file"
+                        title="Remove"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="comment-actions">
+                <button
+                  className="comment-post-btn"
+                  type="button"
+                  onClick={handlePostComment}
+                  disabled={!newComment.trim() || posting}
+                >
+                  {posting ? "Posting..." : "Post comment"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="comment-list">
+            {commentsLoading ? (
+              <p className="comments-empty">Loading comments…</p>
+            ) : comments.length === 0 ? (
+              <p className="comments-empty">No comments yet. Be the first 😌</p>
+            ) : (
+              comments.map((c) => (
+                <div className="comment-item" key={c.id || c._id}>
+                  <div className="comment-avatar">
+                    {(c.user?.name?.[0] || "U").toUpperCase()}
+                  </div>
+
+                  <div className="comment-content">
+                    <div className="comment-meta">
+                      <span className="comment-name">{c.user?.name || "User"}</span>
+                      <span className="comment-dot">·</span>
+                      <span className="comment-time">
+                        {c.createdAt ? new Date(c.createdAt).toLocaleString() : ""}
+                      </span>
+                    </div>
+
+                    <p className="comment-text">{c.text}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        {/* ✅ SOLUTIONS */}
+        <section className="solutions-section" ref={solutionsRef}>
+          <div className="solutions-header">
+            <h3>Solutions</h3>
+            <span className="solutions-count">{solutionsCount ?? 0}</span>
+          </div>
+
+          <p className="solutions-hint">
+            Submit an official solution with text and/or files (PDF/code/images). You can attach multiple files.
+          </p>
+
+          <div className="solution-form">
+            <input
+              ref={solutionFileInputRef}
+              type="file"
+              multiple
+              className="solution-file-input"
+              onChange={onPickSolutionFiles}
+            />
+
+            <div className="solution-notes-wrap">
+              <textarea
+                value={solutionNotes}
+                onChange={(e) => setSolutionNotes(e.target.value)}
+                placeholder="Write your solution here (code/text) and/or attach files…"
+                rows={4}
+              />
+
+              <button
+                type="button"
+                className="solution-attach-btn"
+                onClick={openSolutionFilePicker}
+                aria-label="Attach solution files"
+                title="Attach files"
+              >
+                <i className="fa-solid fa-paperclip"></i>
+              </button>
+            </div>
+
+            {solutionFiles.length > 0 && (
+              <div className="solution-files">
+                {solutionFiles.map((f, idx) => (
+                  <div className="file-chip" key={`${f.name}-${idx}`}>
+                    <span className="file-chip-name">{f.name}</span>
+                    <button
+                      type="button"
+                      className="file-chip-remove"
+                      onClick={() => removeSolutionFile(idx)}
+                      aria-label="Remove file"
+                      title="Remove"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="solution-actions">
+              <button
+                className="solution-post-btn"
+                type="button"
+                onClick={handlePostSolution}
+                disabled={postingSolution || (!solutionNotes.trim() && solutionFiles.length === 0)}
+              >
+                {postingSolution ? "Submitting..." : "Submit solution"}
+              </button>
+            </div>
+          </div>
+
+          <div className="solution-list">
+            {solutionsLoading ? (
+              <p className="solutions-empty">Loading solutions…</p>
+            ) : solutions.length === 0 ? (
+              <p className="solutions-empty">No solutions yet. Be the first 😌</p>
+            ) : (
+              solutions.map((s) => (
+                <div className="solution-item" key={s.id || s._id}>
+                  <div className="solution-meta">
+                    <span className="solution-name">{s.user?.name || "User"}</span>
+                    <span className="comment-dot">·</span>
+                    <span className="solution-time">
+                      {s.createdAt ? new Date(s.createdAt).toLocaleString() : ""}
+                    </span>
+                  </div>
+
+                  {s.notes && <p className="solution-notes">{s.notes}</p>}
+
+                  <div className="solution-files-list">
+                    {(s.files || []).map((f, idx) => (
+                      <a
+                        key={idx}
+                        className="solution-file"
+                        href={f.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {f.originalName || f.name || "file"}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
 
         <button className="back-btn" onClick={() => navigate(-1)}>
           ← Back

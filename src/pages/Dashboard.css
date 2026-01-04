@@ -77,7 +77,7 @@
 .nav-link--active {
   color: #f97316;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 15px;
 }
 
 /* USER */
@@ -155,7 +155,17 @@
   border: 1px solid #f97316; /* outline laranja */
   background-color: #f9741627;
   color: #f97316;
+
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
+
+/* hover dos filtros (fica igual ao All ativo) */
+.filter-pill:hover {
+  background-color: #f97316;
+  color: #ffffff;
+  border-color: #f97316;
+}
+
 
 /* o ativo (All) cheio de laranja */
 .filter-pill--active {
@@ -280,6 +290,15 @@
   padding: 26px 24px;
   color: #ffffff;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+
+.share-card:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.18),
+    0 0 0 4px rgba(249, 115, 22, 0.15); /* glow laranja suave */
 }
 
 /* título e parágrafo alinhados à esquerda */
@@ -312,6 +331,12 @@
   font-size: 18px;
   padding: 10px 0;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.share-card:hover .share-button {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
 }
 
 /* Activity card */

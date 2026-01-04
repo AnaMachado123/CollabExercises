@@ -72,6 +72,7 @@ function Dashboard() {
             <button className="nav-link nav-link--active">Home</button>
             <button className="nav-link">My Exercises</button>
             <button className="nav-link">My Solutions</button>
+            <button className="nav-link">My Saved</button>
           </nav>
         </div>
 
@@ -139,7 +140,7 @@ function Dashboard() {
               <div className="exercise-card-footer">
                 <div className="exercise-metrics">
                   <span>
-                    <i className="fa-solid fa-arrow-up"></i> {ex.upvotes ?? 0}
+                    <i className="fa-regular fa-bookmark"></i> {ex.savesCount ?? 0}
                   </span>
                   <span>
                     <i className="fa-regular fa-comment"></i> {ex.commentsCount ?? 0}
