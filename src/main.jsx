@@ -11,6 +11,7 @@ import ViewExercise from "./pages/ViewExercise.jsx";
 import MyExercises from "./pages/MyExercises.jsx";
 import MySolutions from "./pages/MySolutions.jsx";
 import MySaved from "./pages/MySaved.jsx";
+import Profile from "./pages/Profile.jsx";
 
 import "./index.css";
 
@@ -32,6 +33,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Route path="/my-exercises" element={<MyExercises />} />
       <Route path="/my-solutions" element={<MySolutions />} />
       <Route path="/my-saved" element={<MySaved />} />
+      <Route path="/profile" element={<Profile />} />
 
 
     </Routes>
