@@ -63,9 +63,8 @@ export default function MySaved() {
       try {
         setLoading(true);
 
-        //  Ajusta aqui se o teu endpoint for diferente:
-        // exemplos: "/saved/mine" | "/exercises/saved" | "/saved"
-        const data = await apiRequest("/saved/mine");
+        const data = await apiRequest("/exercises/saved", { auth: true });
+
 
         setItems(Array.isArray(data) ? data : []);
       } catch (err) {
@@ -81,23 +80,25 @@ export default function MySaved() {
 
   const hasItems = useMemo(() => items.length > 0, [items.length]);
 
-  // ✅ tenta “normalizar” a estrutura caso venha diferente do backend
-  const pickExercise = (row) => row?.exercise || row?.item || row?.ex || row;
+  // ✅ normaliza
+  const pickExercise = (row) => {
+    const ex = row?.exercise || row?.item || row?.ex || row;
+    return typeof ex === "string" ? { _id: ex } : ex;
+  };
 
   const handleView = (exerciseId) => {
     if (!exerciseId) return;
-    navigate(`/exercises/${exerciseId}`);
+    navigate(`/exercises/${exerciseId}`); // ou /view-exercise/${exerciseId} se a tua rota for essa
   };
+
 
   const handleRemove = async (row) => {
     const ex = pickExercise(row);
     const exId = ex?._id || ex?.id;
-    const savedId = row?._id || row?.id; // se existir id do saved
 
     const ok = window.confirm("Remove this exercise from saved?");
     if (!ok) return;
 
-    // otimista no front
     setItems((prev) =>
       prev.filter((x) => {
         const e = pickExercise(x);
@@ -107,19 +108,15 @@ export default function MySaved() {
     );
 
     try {
-      // ✅ Quando o back estiver pronto, usa o endpoint correto:
-      // - se remover por savedId:
-      // await apiRequest(`/saved/${savedId}`, { method: "DELETE" });
-      // - se remover por exerciseId:
-      // await apiRequest(`/saved/${exId}`, { method: "DELETE" });
-
-      await apiRequest(`/saved/${savedId || exId}`, { method: "DELETE" });
+      await apiRequest(`/exercises/${exId}/save-toggle`, {
+        method: "POST",
+        auth: true,
+      });
     } catch (err) {
-      console.warn("Remove saved not ready yet:", err?.message || err);
-      // opcional: recarregar para "reverter" se quiseres
-      // window.location.reload();
+      console.warn("Remove saved failed:", err?.message || err);
     }
   };
+
 
   return (
     <div className="mysaved-page">

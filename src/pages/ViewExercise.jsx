@@ -37,26 +37,50 @@ function ViewExercise() {
   const [commentFiles, setCommentFiles] = useState([]);
   const fileInputRef = useRef(null);
 
-  // ✅ load saved state from localStorage (per exercise)
+  // ✅ load saved state from backend (per exercise)
   useEffect(() => {
     if (!id) return;
-    const key = `collab_saved_exercise_${id}`;
-    setIsSaved(localStorage.getItem(key) === "1");
+
+    const fetchSavedState = async () => {
+      try {
+        const data = await apiRequest(`/exercises/${id}/is-saved`, { auth: true });
+        setIsSaved(!!data.saved);
+      } catch (err) {
+        console.warn("is-saved not available yet:", err?.message || err);
+        setIsSaved(false);
+      }
+    };
+
+    fetchSavedState();
   }, [id]);
 
-  const toggleSaved = () => {
-    if (!id) return;
-    const key = `collab_saved_exercise_${id}`;
-    const next = !isSaved;
-    setIsSaved(next);
-    localStorage.setItem(key, next ? "1" : "0");
 
-    // pop animation on save (only when saving, not unsaving)
-    if (next) {
-      setSavePop(true);
-      window.setTimeout(() => setSavePop(false), 320);
+  const toggleSaved = async () => {
+    if (!id) return;
+
+    try {
+      const data = await apiRequest(`/exercises/${id}/save-toggle`, {
+        method: "POST",
+        auth: true,
+      });
+
+      setIsSaved(!!data.saved);
+
+      // atualiza contador imediatamente
+      setExercise((prev) =>
+        prev ? { ...prev, savesCount: data.savesCount } : prev
+      );
+
+      if (data.saved) {
+        setSavePop(true);
+        window.setTimeout(() => setSavePop(false), 320);
+      }
+    } catch (err) {
+      console.error("SAVE TOGGLE ERROR:", err);
+      alert("Não consegui guardar. Estás logada? (token) 👀");
     }
   };
+
 
   // ✅ difficulty class (bulletproof)
   const difficultyClass = useMemo(() => {
@@ -80,16 +104,16 @@ function ViewExercise() {
     return solutions.length;
   }, [exercise, solutions.length]);
 
-  // saved count (enquanto não há back: mostra 1/0 para este user)
   const savedCount = useMemo(() => {
-    const n = exercise?.savesCount ?? exercise?.savedCount; // se o back tiver outro nome
-    if (typeof n === "number") return n;
-    return isSaved ? 1 : 0;
-  }, [exercise, isSaved]);
+    const n = exercise?.savesCount ?? exercise?.savedCount;
+    return typeof n === "number" ? n : 0;
+  }, [exercise]);
+
 
   // ✅ Fetch exercise
   useEffect(() => {
     const fetchExercise = async () => {
+      setLoading(true);
       try {
         const data = await apiRequest(`/exercises/${id}`);
         setExercise(data);
@@ -100,8 +124,9 @@ function ViewExercise() {
       }
     };
 
-    fetchExercise();
+    if (id) fetchExercise();
   }, [id]);
+
 
   // ✅ Fetch comments
   useEffect(() => {
@@ -190,6 +215,8 @@ function ViewExercise() {
     try {
       const created = await apiRequest(`/exercises/${id}/comments`, {
         method: "POST",
+        auth: true,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
       });
 
@@ -198,10 +225,11 @@ function ViewExercise() {
       setCommentFiles([]);
     } catch (err) {
       console.error(err);
-      alert("Ainda não dá para publicar comentário (falta ligar o back). UI está pronta 😉");
+      alert("Erro ao publicar comentário. Vê se estás logada (token) 👀");
     } finally {
       setPosting(false);
     }
+
   };
 
   // ✅ Post solution (placeholder) — texto e/ou ficheiros
@@ -218,6 +246,8 @@ function ViewExercise() {
     try {
       const created = await apiRequest(`/exercises/${id}/solutions`, {
         method: "POST",
+        auth: true,
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes }),
       });
 
@@ -226,10 +256,11 @@ function ViewExercise() {
       setSolutionFiles([]);
     } catch (err) {
       console.error(err);
-      alert("Ainda não dá para submeter solução (falta ligar o back). UI está pronta 😉");
+      alert("Erro ao submeter solução. Vê se estás logada (token) 👀");
     } finally {
       setPostingSolution(false);
     }
+
   };
 
   if (loading) {
