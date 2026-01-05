@@ -4,20 +4,37 @@ export async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem("token");
 
   const headers = {
-    "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
-    ...options.headers
+    ...options.headers,
   };
+
+  const isFormData = options.body instanceof FormData;
+
+  // ⚠️ só mete JSON header se NÃO for FormData
+  if (options.body && !isFormData && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
-    headers
+    headers,
+    body:
+      options.body && !isFormData && typeof options.body !== "string"
+        ? JSON.stringify(options.body)
+        : options.body,
   });
 
-  const data = await response.json();
+  const text = await response.text();
+
+  let data;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
+  }
 
   if (!response.ok) {
-    throw new Error(data.message || "Something went wrong");
+    throw new Error(data?.message || "Something went wrong");
   }
 
   return data;

@@ -11,101 +11,107 @@ function CreateExercise() {
     description: "",
     subject: "",
     difficulty: "",
-    files: null,
+    files: [], // ✅ agora é array
   });
 
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ SUBJECTS
   const subjects = [
-    // Engineering & Tech
+    "Algebra",
+    "Linear Algebra",
+    "Calculus",
+    "Discrete Mathematics",
+    "Statistics",
+    "Probability",
     "Math",
     "Algorithms",
     "Data Structures",
     "Programming",
+    "Object-Oriented Programming",
     "Software Engineering",
     "Web Development",
+    "Mobile Development",
     "Databases",
     "Operating Systems",
     "Networks",
     "Computer Architecture",
-
-    // Business & Economics
+    "Cybersecurity",
+    "Artificial Intelligence",
+    "Machine Learning",
     "Economics",
     "Management",
     "Accounting",
     "Finance",
     "Marketing",
     "Operations Management",
-
-    // Sciences
     "Physics",
-    "Statistics",
-
-    // Languages
     "English",
     "French",
-
-    // General
     "Project Management",
     "Education",
   ];
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: files ? files : value,
-    }));
+
+    if (name === "files") {
+      setForm((prev) => ({ ...prev, files: Array.from(files || []) }));
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const validate = () => {
     const newErrors = {};
     if (!form.title.trim()) newErrors.title = "Title is required.";
-    if (!form.description.trim())
-      newErrors.description = "Description is required.";
+    if (!form.description.trim()) newErrors.description = "Description is required.";
     if (!form.subject) newErrors.subject = "Subject is required.";
     if (!form.difficulty) newErrors.difficulty = "Difficulty is required.";
+
+    // ✅ agora exige pelo menos 1 ficheiro
+    if (!form.files || form.files.length === 0) {
+      newErrors.files = "You must attach at least 1 file (PDF/image).";
+    }
+
     return newErrors;
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    setServerError("");
 
-  const validationErrors = validate();
-  setErrors(validationErrors);
-  if (Object.keys(validationErrors).length > 0) return;
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
-  const formData = new FormData();
-  formData.append("title", form.title);
-  formData.append("description", form.description);
-  formData.append("subject", form.subject);
-  formData.append("difficulty", form.difficulty);
+    const formData = new FormData();
+    formData.append("title", form.title);
+    formData.append("description", form.description);
+    formData.append("subject", form.subject);
+    formData.append("difficulty", form.difficulty);
 
-  if (form.files) {
-    Array.from(form.files).forEach((file) => {
-      formData.append("files", file);
-    });
-  }
+    // ✅ manda todos como "files"
+    form.files.forEach((f) => formData.append("files", f));
 
-  try {
-    const token = localStorage.getItem("token");
+    try {
+      setLoading(true);
 
-    await fetch("http://localhost:3000/api/exercises", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
+      await apiRequest("/exercises", {
+        method: "POST",
+        body: formData,
+      });
 
-    navigate("/dashboard");
-  } catch (err) {
-    console.error(err);
-  }
-};
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      setServerError(err?.message || "Failed to create exercise.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="create-exercise-page">
@@ -113,7 +119,6 @@ function CreateExercise() {
         <h1 className="create-title">Post new exercise</h1>
 
         <form onSubmit={handleSubmit} noValidate>
-          {/* TITLE */}
           <label className="field-label">Title</label>
           <input
             type="text"
@@ -125,7 +130,6 @@ function CreateExercise() {
           />
           {errors.title && <p className="error-text">{errors.title}</p>}
 
-          {/* DESCRIPTION */}
           <label className="field-label">Description</label>
           <textarea
             name="description"
@@ -134,11 +138,8 @@ function CreateExercise() {
             onChange={handleChange}
             className="textarea"
           />
-          {errors.description && (
-            <p className="error-text">{errors.description}</p>
-          )}
+          {errors.description && <p className="error-text">{errors.description}</p>}
 
-          {/* SUBJECT + DIFFICULTY */}
           <div className="row">
             <div className="col">
               <label className="field-label">Subject</label>
@@ -155,9 +156,7 @@ function CreateExercise() {
                   </option>
                 ))}
               </select>
-              {errors.subject && (
-                <p className="error-text">{errors.subject}</p>
-              )}
+              {errors.subject && <p className="error-text">{errors.subject}</p>}
             </div>
 
             <div className="col">
@@ -173,14 +172,11 @@ function CreateExercise() {
                 <option>Intermediate</option>
                 <option>Advanced</option>
               </select>
-              {errors.difficulty && (
-                <p className="error-text">{errors.difficulty}</p>
-              )}
+              {errors.difficulty && <p className="error-text">{errors.difficulty}</p>}
             </div>
           </div>
 
-          {/* ATTACHMENTS */}
-          <label className="field-label">Attachments</label>
+          <label className="field-label">Attachments (required)</label>
           <div className="file-box">
             <label className="file-button">
               Select files
@@ -190,34 +186,25 @@ function CreateExercise() {
                 multiple
                 hidden
                 onChange={handleChange}
+                accept=".pdf,image/*"
               />
             </label>
+
             <span className="file-text">
-              {form.files
-                ? `${form.files.length} file(s) selected`
-                : "No files selected"}
+              {form.files?.length ? `${form.files.length} file(s) selected` : "No files selected"}
             </span>
           </div>
-          <p className="file-hint">
-            You can add images or PDFs (optional)
-          </p>
+
+          {errors.files && <p className="error-text">{errors.files}</p>}
+          <p className="file-hint">Attach 1+ PDFs/images.</p>
 
           {serverError && <p className="error-text">{serverError}</p>}
 
-          {/* SUBMIT */}
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={loading}
-          >
+          <button type="submit" className="submit-button" disabled={loading}>
             {loading ? "Posting..." : "Post exercise"}
           </button>
 
-          <button
-            type="button"
-            className="back-link"
-            onClick={() => navigate("/dashboard")}
-          >
+          <button type="button" className="back-link" onClick={() => navigate("/dashboard")}>
             ← Go back to dashboard
           </button>
         </form>

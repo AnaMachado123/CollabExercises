@@ -12,6 +12,8 @@ import MyExercises from "./pages/MyExercises.jsx";
 import MySolutions from "./pages/MySolutions.jsx";
 import MySaved from "./pages/MySaved.jsx";
 import Profile from "./pages/Profile.jsx";
+import EditExercise from "./pages/EditExercise.jsx";
+
 
 import "./index.css";
 
@@ -34,6 +36,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Route path="/my-solutions" element={<MySolutions />} />
       <Route path="/my-saved" element={<MySaved />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/exercises/:id/edit" element={<EditExercise />} />
+
 
 
     </Routes>

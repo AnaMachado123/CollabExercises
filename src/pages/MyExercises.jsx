@@ -31,6 +31,10 @@ export default function MyExercises() {
   const navigate = useNavigate();
   const location = useLocation();
   const [openUserMenu, setOpenUserMenu] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
 
 const handleLogout = () => {
   localStorage.removeItem("token");
@@ -75,6 +79,30 @@ const handleLogout = () => {
     load();
   }, []);
 
+  useEffect(() => {
+    if (!deleteModalOpen) return;
+
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [deleteModalOpen]);
+
+  useEffect(() => {
+    if (!deleteModalOpen) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") closeDeleteModal();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [deleteModalOpen]);
+
+
+
   const hasItems = useMemo(() => items.length > 0, [items.length]);
 
   const handleNew = () => {
@@ -89,16 +117,37 @@ const handleLogout = () => {
     navigate(`/exercises/${id}/edit`);
   };
 
-  const handleDelete = async (id) => {
-    const ok = window.confirm("Delete this exercise? This action cannot be undone.");
-    if (!ok) return;
-
-    // 🔁 quando ligares o back, aqui fica o DELETE:
-    // await apiRequest(`/exercises/${id}`, { method: "DELETE" });
-
-    // por agora remove só no front
-    setItems((prev) => prev.filter((x) => (x._id || x.id) !== id));
+  const openDeleteModal = (id) => {
+    setDeleteTargetId(id);
+    setDeleteModalOpen(true);
   };
+
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setDeleteTargetId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+
+    try {
+      setDeleting(true);
+
+      await apiRequest(`/exercises/${deleteTargetId}`, {
+        method: "DELETE",
+        auth: true,
+      });
+
+      setItems((prev) => prev.filter((x) => (x._id || x.id) !== deleteTargetId));
+      closeDeleteModal();
+    } catch (err) {
+      console.error(err);
+      alert(err?.message || "Failed to delete exercise.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
 
   return (
     <div className="myex-page">
@@ -238,7 +287,7 @@ const handleLogout = () => {
                       <button
                         type="button"
                         className="icon-btn danger"
-                        onClick={() => handleDelete(exId)}
+                        onClick={() => openDeleteModal(exId)}
                         aria-label="Delete"
                         title="Delete"
                       >
@@ -287,6 +336,44 @@ const handleLogout = () => {
           </div>
         )}
       </div>
+        {deleteModalOpen && (
+          <div
+            className="ce-modal-overlay"
+            onClick={() => {
+              if (!deleting) closeDeleteModal();
+            }}
+          >
+
+          <div
+            className="ce-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-title"
+          >
+            <div className="ce-modal-top">
+              <div className="ce-modal-icon">
+                <i className="fa-regular fa-trash-can"></i>
+              </div>
+
+              <div className="ce-modal-text">
+                <h3 id="delete-title">Delete exercise?</h3>
+                <p>This action cannot be undone.</p>
+              </div>
+            </div>
+
+            <div className="ce-modal-actions">
+              <button type="button" className="ce-btn ghost" onClick={closeDeleteModal} disabled={deleting}>
+                Cancel
+              </button>
+
+              <button type="button" className="ce-btn danger" onClick={confirmDelete} disabled={deleting}>
+                {deleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+        )}
     </div>
   );
 }

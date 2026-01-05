@@ -37,6 +37,27 @@ function ViewExercise() {
   const [commentFiles, setCommentFiles] = useState([]);
   const fileInputRef = useRef(null);
 
+  const user = useMemo(
+    () => JSON.parse(localStorage.getItem("user") || "null"),
+    []
+  );
+
+  const displayName =
+    user?.name || user?.username || user?.email || "User";
+
+  const initials =
+    displayName
+      .trim()
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase() || "U";
+
+
+
+
   // ✅ load saved state from backend (per exercise)
   useEffect(() => {
     if (!id) return;
@@ -260,7 +281,8 @@ function ViewExercise() {
     } finally {
       setPostingSolution(false);
     }
-
+    
+  
   };
 
   if (loading) {
@@ -370,7 +392,8 @@ function ViewExercise() {
           </div>
 
           <div className="comment-form">
-            <div className="comment-avatar">U</div>
+            <div className="comment-avatar">{initials}</div>
+
 
             <div className="comment-inputs">
               <input
@@ -436,7 +459,7 @@ function ViewExercise() {
             {commentsLoading ? (
               <p className="comments-empty">Loading comments…</p>
             ) : comments.length === 0 ? (
-              <p className="comments-empty">No comments yet. Be the first 😌</p>
+              <p className="comments-empty">No comments yet. Be the first </p>
             ) : (
               comments.map((c) => (
                 <div className="comment-item" key={c.id || c._id}>
@@ -535,7 +558,7 @@ function ViewExercise() {
             {solutionsLoading ? (
               <p className="solutions-empty">Loading solutions…</p>
             ) : solutions.length === 0 ? (
-              <p className="solutions-empty">No solutions yet. Be the first 😌</p>
+              <p className="solutions-empty">No solutions yet. Be the first </p>
             ) : (
               solutions.map((s) => (
                 <div className="solution-item" key={s.id || s._id}>
