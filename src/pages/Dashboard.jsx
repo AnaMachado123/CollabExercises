@@ -3,6 +3,8 @@ import "./Dashboard.css";
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { apiRequest } from "../services/api";
+import RecentActivity from "../components/RecentActivity";
+
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -243,15 +245,9 @@ function Dashboard() {
               <h3>Recent activity</h3>
             </div>
 
-            <div className="activity-item">
-              <div className="activity-line">
-                <span className="activity-name">Maria Santos</span>
-                <span className="activity-action">posted a solution</span>
-                <span className="activity-link">QuickSort</span>
-              </div>
-              <div className="activity-time">2h ago</div>
-            </div>
+            <RecentActivity limit={6} />
           </section>
+
         </aside>
       </main>
     </div>

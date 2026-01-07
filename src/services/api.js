@@ -1,15 +1,10 @@
 const API_URL = "http://localhost:3000/api";
 
 export async function apiRequest(endpoint, options = {}) {
-  const {
-    method = "GET",
-    body,
-    headers: customHeaders = {},
-    auth = false,
-  } = options;
+  const { method = "GET", body, headers: customHeaders = {} } = options;
 
-  // 🔐 token só se auth === true
-  const token = auth ? localStorage.getItem("token") : null;
+  // ✅ token automático se existir
+  const token = localStorage.getItem("token");
 
   const headers = {
     ...(token && { Authorization: `Bearer ${token}` }),
@@ -18,7 +13,6 @@ export async function apiRequest(endpoint, options = {}) {
 
   const isFormData = body instanceof FormData;
 
-  // ⚠️ só define Content-Type se NÃO for FormData
   if (body && !isFormData && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
@@ -32,7 +26,6 @@ export async function apiRequest(endpoint, options = {}) {
         : body,
   });
 
-  // 🧠 backend pode devolver JSON ou texto
   const text = await response.text();
 
   let data = null;
