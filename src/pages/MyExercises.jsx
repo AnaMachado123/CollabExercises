@@ -94,12 +94,13 @@ const handleLogout = () => {
     if (!deleteModalOpen) return;
 
     const onKeyDown = (e) => {
-      if (e.key === "Escape") closeDeleteModal();
+      if (e.key === "Escape" && !deleting) closeDeleteModal();
     };
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [deleteModalOpen]);
+  }, [deleteModalOpen, deleting]);
+
 
 
 
