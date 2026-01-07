@@ -333,7 +333,9 @@ function ViewExercise() {
             title={isSaved ? "Saved" : "Save"}
           >
             <i
-              className={isSaved ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"}
+              className={
+                isSaved ? "fa-solid fa-bookmark" : "fa-regular fa-bookmark"
+              }
             ></i>
           </button>
         </div>
@@ -357,11 +359,19 @@ function ViewExercise() {
         <div className="view-metrics">
           <span>{savedCount ?? 0} saved</span>
 
-          <button type="button" className="metric-link" onClick={handleScrollToComments}>
+          <button
+            type="button"
+            className="metric-link"
+            onClick={handleScrollToComments}
+          >
             {commentsCount ?? 0} comments
           </button>
 
-          <button type="button" className="metric-link" onClick={handleScrollToSolutions}>
+          <button
+            type="button"
+            className="metric-link"
+            onClick={handleScrollToSolutions}
+          >
             {solutionsCount ?? 0} solutions
           </button>
         </div>
@@ -376,9 +386,7 @@ function ViewExercise() {
           <aside className="view-attachments">
             <h3>Attached files</h3>
 
-            {exerciseAttachments.length === 0 && (
-              <p className="empty">No attachments</p>
-            )}
+            {exerciseAttachments.length === 0 && <p className="empty">No attachments</p>}
 
             {exerciseAttachments.map((file, index) => (
               <a
@@ -517,7 +525,8 @@ function ViewExercise() {
           </div>
 
           <p className="solutions-hint">
-            Submit an official solution with text and/or files (PDF/code/images). You can attach multiple files.
+            Submit an official solution with text and/or files (PDF/code/images). You can
+            attach multiple files.
           </p>
 
           <div className="solution-form">
@@ -587,33 +596,41 @@ function ViewExercise() {
             ) : (
               solutions.map((s) => (
                 <div className="solution-item" key={s.id || s._id}>
-                  <div className="solution-meta">
-                    <span className="solution-name">{s.user?.name || "User"}</span>
-                    <span className="comment-dot">·</span>
-                    <span className="solution-time">
-                      {s.createdAt ? new Date(s.createdAt).toLocaleString() : ""}
-                    </span>
+                  {/* ✅ AVATAR igual ao comment */}
+                  <div className="comment-avatar">
+                    {(s.user?.name?.[0] || "U").toUpperCase()}
                   </div>
 
-                  {/* ✅ BACK DEVOLVE "text", não "notes" */}
-                  {s.text && <p className="solution-notes">{s.text}</p>}
-
-                  {/* ✅ BACK DEVOLVE "attachments", não "files" */}
-                  {!!(s.attachments || []).length && (
-                    <div className="solution-files-list">
-                      {(s.attachments || []).map((f, idx) => (
-                        <a
-                          key={idx}
-                          className="solution-file"
-                          href={f.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {f.originalName || "file"}
-                        </a>
-                      ))}
+                  {/* conteúdo da solução */}
+                  <div className="solution-content" style={{ flex: 1 }}>
+                    <div className="solution-meta">
+                      <span className="solution-name">{s.user?.name || "User"}</span>
+                      <span className="comment-dot">·</span>
+                      <span className="solution-time">
+                        {s.createdAt ? new Date(s.createdAt).toLocaleString() : ""}
+                      </span>
                     </div>
-                  )}
+
+                    {/* ✅ BACK DEVOLVE "text", não "notes" */}
+                    {s.text && <p className="solution-notes">{s.text}</p>}
+
+                    {/* ✅ BACK DEVOLVE "attachments", não "files" */}
+                    {!!(s.attachments || []).length && (
+                      <div className="solution-files-list">
+                        {(s.attachments || []).map((f, idx) => (
+                          <a
+                            key={idx}
+                            className="solution-file"
+                            href={f.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {f.originalName || "file"}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))
             )}
