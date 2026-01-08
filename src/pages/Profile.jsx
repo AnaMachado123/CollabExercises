@@ -33,15 +33,16 @@ export default function Profile() {
     if (!token) navigate("/login");
   }, [navigate]);
 
-  const storedUser = useMemo(
-    () => JSON.parse(localStorage.getItem("user") || "null"),
-    []
-  );
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState("");
   const [error, setError] = useState("");
+
+  const storedUser = useMemo(() => {
+    return JSON.parse(localStorage.getItem("user") || "null");
+  }, []);
+
+
 
   // profile data
   const [profile, setProfile] = useState({
@@ -50,9 +51,9 @@ export default function Profile() {
     memberSince: storedUser?.memberSince || "2025",
     passwordMasked: "••••••••",
     stats: {
-      exercises: 12,
-      solutions: 8,
-      saved: 5,
+      exercises: 0,
+      solutions: 0,
+      saved: 0,
     },
   });
 
@@ -103,7 +104,8 @@ export default function Profile() {
     return () => {
       alive = false;
     };
-  }, [storedUser?.email, storedUser?.name]);
+  }, []);
+
 
   const initials = initialsFromName(profile.name);
 
@@ -119,23 +121,33 @@ export default function Profile() {
   };
 
   const handleSave = async () => {
-    try {
-      setSaving(true);
-      setError("");
-      setToast("");
+      try {
+        setSaving(true);
+        setError("");
+        setToast("");
 
-      // ✅ endpoint exemplo - ajusta quando ligares o back
-      // await apiRequest("/users/me", { method: "PUT", body: { name: form.name } });
+      const data = await apiRequest("/users/me", {
+        method: "PUT",
+        body: { name: form.name, email: form.email },
+      });
 
-      // por agora só atualiza no front + localStorage
-      const updated = { ...profile, name: form.name };
-      setProfile(updated);
+      const next = {
+        name: data?.name ?? form.name,
+        email: data?.email ?? form.email,
+        memberSince: data?.memberSince ?? profile.memberSince,
+        passwordMasked: "••••••••",
+        stats: {
+          exercises: data?.stats?.exercises ?? profile.stats.exercises ?? 0,
+          solutions: data?.stats?.solutions ?? profile.stats.solutions ?? 0,
+          saved: data?.stats?.saved ?? profile.stats.saved ?? 0,
+        },
+      };
 
-      const existing = JSON.parse(localStorage.getItem("user") || "null");
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ ...(existing || {}), name: form.name, email: form.email })
-      );
+      setProfile(next);
+      setForm({ name: next.name, email: next.email });
+
+      // atualiza o user local também (para o dashboard/navbar)
+      localStorage.setItem("user", JSON.stringify({ ...data }));
 
       setToast("Profile updated successfully.");
       setTimeout(() => setToast(""), 2500);
@@ -145,6 +157,7 @@ export default function Profile() {
       setSaving(false);
     }
   };
+
 
   const handleChangePassword = () => {
     // se tiveres route para change password, mete aqui
