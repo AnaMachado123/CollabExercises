@@ -254,3 +254,68 @@ body {
 }
 
 
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .login-left {
+    flex: 0 0 40%;
+    padding: 40px;
+  }
+
+  .welcome-text h1 {
+    font-size: 34px;
+  }
+
+  .logo-text {
+    font-size: 28px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  /* Esconde o lado esquerdo */
+  .login-left {
+    display: none;
+  }
+
+  /* Container passa a 1 coluna */
+  .login-container {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-right {
+    width: 100%;
+    padding: 20px;
+  }
+
+  /* Card ocupa melhor o ecrã */
+  .login-card {
+    width: 100%;
+    max-width: 380px;
+    padding: 32px 28px;
+  }
+
+  body {
+    background-position: center;
+    background-attachment: fixed;
+  }
+}
+
+/* Mobile pequeno */
+@media (max-width: 420px) {
+  .login-card {
+    padding: 26px 22px;
+  }
+
+  .login-card h2 {
+    font-size: 22px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+}
