@@ -1,14 +1,18 @@
-/* PAGE BASE */
+/* =========================
+   PAGE BASE
+   ========================= */
 .dashboard-page {
   min-height: 100vh;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
-/* HEADER */
+/* =========================
+   HEADER
+   ========================= */
 .dashboard-header {
   height: 68px;
   padding: 0 40px;
@@ -169,7 +173,9 @@
   border: 1px solid rgba(249, 115, 22, 0.35);
 }
 
-/* MAIN LAYOUT */
+/* =========================
+   MAIN LAYOUT (desktop)
+   ========================= */
 .dashboard-main {
   flex: 1;
   padding: 30px 40px 40px;
@@ -178,7 +184,7 @@
   gap: 28px;
 }
 
-/* LEFT SIDE */
+/* LEFT */
 .dashboard-left {
   display: flex;
   flex-direction: column;
@@ -222,7 +228,6 @@
   gap: 10px;
 }
 
-/* todos os botões */
 .filter-pill {
   border-radius: 999px;
   padding: 6px 18px;
@@ -236,14 +241,12 @@
     border-color 0.2s ease;
 }
 
-/* hover dos filtros */
 .filter-pill:hover {
   background-color: #f97316;
   color: #ffffff;
   border-color: #f97316;
 }
 
-/* o ativo */
 .filter-pill--active {
   background-color: #f97316;
   color: #ffffff;
@@ -317,7 +320,6 @@
   padding-bottom: 10px;
 }
 
-/* Footer */
 .exercise-card-footer {
   margin-top: 4px;
   display: flex;
@@ -349,7 +351,7 @@
   cursor: pointer;
 }
 
-/* RIGHT SIDE */
+/* RIGHT */
 .dashboard-right {
   display: flex;
   flex-direction: column;
@@ -506,12 +508,7 @@
   margin-top: 2px;
 }
 
-/* ✅ cards consistentes + texto não rebenta */
-.exercise-card {
-  width: 100%;
-  max-width: 100%;
-}
-
+/* ✅ texto não rebenta + clamp */
 .exercise-title,
 .exercise-description {
   overflow-wrap: anywhere;
@@ -542,34 +539,18 @@
 }
 
 /* =========================
-   STICKY SIDEBAR (RIGHT)
+   STICKY SIDEBAR (desktop)
    ========================= */
-
 .dashboard-right {
   align-self: start;
-
   position: sticky;
   top: 20px;
-
   height: calc(100vh - 20px);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.share-card,
-.activity-card {
-  position: static;
-}
-
-.share-card {
-  flex: 0 0 auto;
 }
 
 .activity-card {
   flex: 1 1 auto;
   min-height: 0;
-  overflow: hidden;
 }
 
 .activity-list {
@@ -580,11 +561,9 @@
 
 /* =========================
    MOBILE NAV (HAMBURGER + DROPDOWN)
-   (usa .nav-toggle + overlay + panel)
    ========================= */
-
 .nav-toggle {
-  display: none; /* aparece só no mobile */
+  display: none; /* só no mobile */
   width: 42px;
   height: 42px;
   border: 1px solid rgba(15, 23, 42, 0.12);
@@ -628,7 +607,7 @@
 
 .mobile-nav-panel {
   position: absolute;
-  top: 76px; /* abaixo do header fixo */
+  top: 76px;
   left: 16px;
   right: 16px;
 
@@ -668,13 +647,17 @@
 }
 
 /* =========================
-   RESPONSIVO (limpo e sem duplicados)
+   RESPONSIVO (sem duplicados)
    ========================= */
 
-/* 1200px: larguras fixas viram fluidas */
+/* 1200px: larguras fixas -> fluidas */
 @media (max-width: 1200px) {
   .dashboard-search {
     width: 100%;
+    max-width: 100%;
+  }
+
+  .exercise-card {
     max-width: 100%;
   }
 
@@ -688,22 +671,30 @@
   }
 }
 
-/* 1024px: grid 1 coluna + sidebar deixa de ser sticky */
+/* 1024px: 1 coluna + RIGHT em cima + sem sticky */
 @media (max-width: 1024px) {
   .dashboard-header {
     padding: 0 20px;
     gap: 20px;
   }
 
+  /* 🔥 muda para flex para dar order real */
   .dashboard-main {
     padding: 20px;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
   }
 
   .dashboard-right {
-    position: static;
+    order: -1;           /* ✅ vem primeiro */
+    position: static;    /* ✅ sem sticky */
     height: auto;
     align-self: stretch;
+  }
+
+  .dashboard-left {
+    order: 0;
   }
 
   .share-card,
@@ -716,7 +707,7 @@
   }
 }
 
-/* 768px: HEADER 1 linha + navbar normal some + hamburger aparece */
+/* 768px: header 1 linha + hide nav + show hamburger */
 @media (max-width: 768px) {
   .dashboard-header {
     flex-wrap: nowrap;
@@ -741,14 +732,12 @@
     font-size: 18px;
   }
 
-  /* navbar normal desaparece (não desce, não aparece) */
   .header-center {
-    display: none !important;
+    display: none !important; /* navbar normal some */
   }
 
-  /* hamburger aparece */
   .nav-toggle {
-    display: flex;
+    display: flex; /* hamburger aparece */
     flex: 0 0 auto;
   }
 
@@ -760,8 +749,6 @@
   .dashboard-search {
     height: 52px;
     padding: 8px 14px;
-    width: 100%;
-    max-width: 100%;
   }
 
   .dashboard-filters {
