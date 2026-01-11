@@ -38,6 +38,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
 }
 
 .dashboard-logo-icon {
@@ -95,37 +96,35 @@
 }
 
 /* USER DROPDOWN */
-.user-dropdown{
+.user-dropdown {
   position: absolute;
   top: 52px;
   right: 0;
 
   background: #ffffff;
-  border: 1px solid rgba(15,23,42,.10);
+  border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: 14px;
   min-width: 180px;
   padding: 8px;
 
-  box-shadow: 0 18px 45px rgba(0,0,0,.18);
-  z-index: 999;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+  z-index: 1200;
 
   opacity: 0;
-  transform: translateY(-8px) scale(.98);
+  transform: translateY(-8px) scale(0.98);
   pointer-events: none;
 
-  transition:
-    opacity .18s ease,
-    transform .18s cubic-bezier(.16,1,.3,1);
+  transition: opacity 0.18s ease,
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* estado aberto */
-.user-dropdown.open{
+.user-dropdown.open {
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
 }
 
-.user-dropdown::before{
+.user-dropdown::before {
   content: "";
   position: absolute;
   top: -8px;
@@ -133,12 +132,12 @@
   width: 14px;
   height: 14px;
   background: #fff;
-  border-left: 1px solid rgba(15,23,42,.10);
-  border-top: 1px solid rgba(15,23,42,.10);
+  border-left: 1px solid rgba(15, 23, 42, 0.1);
+  border-top: 1px solid rgba(15, 23, 42, 0.1);
   transform: rotate(45deg);
 }
 
-.user-dropdown button{
+.user-dropdown button {
   width: 100%;
   padding: 10px 12px;
   border: none;
@@ -154,21 +153,21 @@
   border-radius: 8px;
 }
 
-.user-dropdown button:hover{
-  background: rgba(249,115,22,.08);
+.user-dropdown button:hover {
+  background: rgba(249, 115, 22, 0.08);
 }
 
-.user-dropdown .danger:hover{
-  background: rgba(239,68,68,.10);
+.user-dropdown .danger:hover {
+  background: rgba(239, 68, 68, 0.1);
 }
 
-.user-dropdown .danger i{
+.user-dropdown .danger i {
   color: #ef4444;
 }
 
-.dashboard-user-circle.user-open{
-  box-shadow: 0 0 0 4px rgba(249,115,22,.18);
-  border: 1px solid rgba(249,115,22,.35);
+.dashboard-user-circle.user-open {
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.18);
+  border: 1px solid rgba(249, 115, 22, 0.35);
 }
 
 /* MAIN LAYOUT */
@@ -234,17 +233,16 @@
   background-color: #f9741627;
   color: #f97316;
 
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease,
+    border-color 0.2s ease;
 }
 
-/* hover dos filtros (fica igual ao All ativo) */
 .filter-pill:hover {
   background-color: #f97316;
   color: #ffffff;
   border-color: #f97316;
 }
 
-/* o ativo (All) cheio de laranja */
 .filter-pill--active {
   background-color: #f97316;
   color: #ffffff;
@@ -355,10 +353,22 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  /* sticky desktop */
+  align-self: start;
+  position: sticky;
+  top: 20px;
+  height: calc(100vh - 20px);
 }
 
-/* Share card */
+.share-card,
+.activity-card {
+  position: static;
+}
+
 .share-card {
+  flex: 0 0 auto;
+
   width: 483.98px;
   height: 275.82px;
   background-color: #f97316;
@@ -371,12 +381,10 @@
 
 .share-card:hover {
   transform: translateY(-6px);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.18),
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18),
     0 0 0 4px rgba(249, 115, 22, 0.15);
 }
 
-/* título e parágrafo alinhados à esquerda */
 .share-card h2,
 .share-card p {
   text-align: left;
@@ -416,6 +424,10 @@
 
 /* Activity card */
 .activity-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+
   width: 483.98px;
   height: 239px;
   background-color: #ffffff;
@@ -430,7 +442,6 @@
 
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .activity-header {
@@ -509,31 +520,13 @@
   margin-top: 2px;
 }
 
-/* Pequena responsividade */
-@media (max-width: 1024px) {
-  .dashboard-main {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-right {
-    order: -1;
-  }
-}
-
-/* ✅ cards ficam consistentes */
-.exercise-card {
-  width: 100%;
-  max-width: 100%;
-}
-
-/* ✅ o conteúdo não “rebenta” */
+/* ✅ cards consistentes + texto não rebenta */
 .exercise-title,
 .exercise-description {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-/* ✅ cortar texto bonito (sem destruir layout) */
 .clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -541,92 +534,120 @@
   overflow: hidden;
 }
 
-/* ✅ difficulty pills */
+/* difficulty */
 .difficulty-pill {
   border: 1px solid currentColor;
   background: transparent;
   font-weight: 600;
 }
-
-/* Beginner = verde */
 .difficulty-beginner {
   color: #2e7d32;
 }
-
-/* Intermediate = laranja */
 .difficulty-intermediate {
   color: #f57c00;
 }
-
-/* Advanced = vermelho */
 .difficulty-advanced {
   color: #d32f2f;
 }
 
-/* ✅ responsivo (mobile/tablet) */
-@media (max-width: 900px) {
-  .dashboard-main {
-    flex-direction: column;
-  }
-
-  .dashboard-left,
-  .dashboard-right {
-    width: 100%;
-  }
-
-  .dashboard-search input {
-    width: 100%;
-  }
-}
-
 /* =========================
-   STICKY SIDEBAR (RIGHT)
+   ✅ MOBILE NAV (HAMBURGER + OVERLAY)
    ========================= */
 
-.dashboard-right{
-  align-self: start;
+/* hamburger: escondido no desktop */
+.nav-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
 
-  position: sticky;
-  top: 20px;
-
-  height: calc(100vh - 20px);
-  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
-  gap: 18px;
+  gap: 6px;
+
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.1);
 }
 
-.share-card,
-.activity-card{
-  position: static;
+.nav-toggle span {
+  width: 18px;
+  height: 2px;
+  background: #f97316;
+  border-radius: 999px;
+  display: block;
+  transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
-.share-card{
-  flex: 0 0 auto;
+.nav-toggle.open span:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.nav-toggle.open span:nth-child(2) {
+  opacity: 0;
+}
+.nav-toggle.open span:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
 }
 
-.activity-card{
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
+/* overlay do menu */
+.mobile-nav-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+  z-index: 2000;
 }
 
-.activity-list{
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+/* painel dropdown */
+.mobile-nav-panel {
+  position: absolute;
+  top: 76px; /* abaixo do header */
+  left: 16px;
+  right: 16px;
+
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 16px;
+  padding: 10px;
+
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+}
+
+.mobile-nav-link {
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+
+  padding: 12px 12px;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+
+  font-size: 14px;
+  color: #374151;
+  text-align: left;
+}
+
+.mobile-nav-link:hover {
+  background: rgba(249, 115, 22, 0.08);
+}
+
+.mobile-nav-link.active {
+  background: rgba(249, 115, 22, 0.12);
+  color: #f97316;
+  font-weight: 600;
 }
 
 /* =========================================================
-   ✅ RESPONSIVO EXTRA (SEM MEXER NO TEU DESIGN)
+   ✅ RESPONSIVO (limpo) + FIX NAVBAR 1 LINHA NO MOBILE
    ========================================================= */
 
 @media (max-width: 1200px) {
   .dashboard-search {
     width: 100%;
-    max-width: 100%;
-  }
-
-  .exercise-card {
     max-width: 100%;
   }
 
@@ -651,383 +672,41 @@
     grid-template-columns: 1fr;
   }
 
-  .dashboard-right{
+  .dashboard-right {
     position: static;
     height: auto;
     align-self: stretch;
   }
 
   .share-card,
-  .activity-card{
+  .activity-card {
     height: auto;
   }
 
-  .activity-card{
+  .activity-card {
     max-height: 320px;
   }
 }
 
 @media (max-width: 768px) {
-  .dashboard-header{
-    height: auto;
-    padding: 12px 16px;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .header-center{
-    flex: 1 1 100%;
-    justify-content: flex-start;
-  }
-
-  .dashboard-nav{
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-
-  .nav-link,
-  .nav-link--active{
-    font-size: 14px;
-  }
-
-  .dashboard-main{
-    padding: 16px;
-    gap: 18px;
-  }
-
-  .dashboard-search{
-    height: 52px;
-    padding: 8px 14px;
-  }
-
-  .dashboard-filters{
-    gap: 8px;
-  }
-
-  .filter-pill{
-    padding: 6px 14px;
-    font-size: 12px;
-  }
-
-  .exercise-card{
-    padding: 18px;
-    border-radius: 16px;
-  }
-
-  .exercise-card-footer{
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding-top: 16px;
-  }
-
-  .exercise-button{
-    width: 100%;
-    text-align: center;
-  }
-
-  .share-card{
-    padding: 20px;
-  }
-
-  .share-card p{
-    margin-bottom: 22px;
-  }
-
-  .activity-card{
-    max-height: 300px;
-  }
-}
-
-@media (max-width: 420px) {
-  .dashboard-logo-text{
-    font-size: 16px;
-  }
-
-  .dashboard-logo-icon{
-    width: 36px;
-    height: 36px;
-  }
-
-  .exercise-title{
-    font-size: 16px;
-  }
-
-  .exercise-description{
-    font-size: 12px;
-  }
-}
-
-/* =========================
-   ✅ NAVBAR MOBILE (HAMBURGUER + DROPDOWN)
-   ========================= */
-
-/* wrapper do botão + dropdown */
-.mobile-nav-wrap{
-  position: relative;
-  display: none; /* só aparece no mobile */
-}
-
-/* botão hambúrguer */
-.mobile-menu-btn{
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: #ffffff;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  padding: 0;
-}
-
-.mobile-menu-btn span{
-  display: block;
-  width: 18px;
-  height: 2px;
-  background: #f97316;
-  border-radius: 999px;
-  transition: transform .18s ease, opacity .18s ease;
-  margin: 2px 0;
-}
-
-/* animação X */
-.mobile-menu-btn.open span:nth-child(1){
-  transform: translateY(4px) rotate(45deg);
-}
-.mobile-menu-btn.open span:nth-child(2){
-  opacity: 0;
-}
-.mobile-menu-btn.open span:nth-child(3){
-  transform: translateY(-4px) rotate(-45deg);
-}
-
-/* dropdown do mobile */
-.mobile-nav{
-  position: absolute;
-  top: 48px;
-  right: 0;
-
-  width: 220px;
-  padding: 8px;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid rgba(15,23,42,.10);
-  box-shadow: 0 18px 45px rgba(0,0,0,.18);
-  z-index: 999;
-
-  opacity: 0;
-  transform: translateY(-8px) scale(.98);
-  pointer-events: none;
-
-  transition:
-    opacity .18s ease,
-    transform .18s cubic-bezier(.16,1,.3,1);
-}
-
-.mobile-nav.open{
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-
-.mobile-nav-item{
-  width: 100%;
-  padding: 10px 12px;
-  border: none;
-  background: none;
-  cursor: pointer;
-
-  text-align: left;
-  font-size: 14px;
-  color: #374151;
-  border-radius: 10px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mobile-nav-item:hover{
-  background: rgba(249,115,22,.08);
-}
-
-.mobile-nav-item.active{
-  background: rgba(249,115,22,.12);
-  color: #f97316;
-  font-weight: 600;
-}
-
-/* ✅ no mobile: esconde a nav normal e mostra hambúrguer */
-@media (max-width: 768px){
-  .dashboard-nav{
-    display: none;
-  }
-
-  .mobile-nav-wrap{
-    display: block;
-  }
-}
-
-/* =========================
-   ✅ MOBILE NAV (HAMBURGER + DROPDOWN)
-   ========================= */
-
-/* hamburger: escondido no desktop */
-.nav-toggle{
-  display: none;
-  width: 42px;
-  height: 42px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: #fff;
-  border-radius: 12px;
-  cursor: pointer;
-
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 6px;
-
-  margin-right: 10px; /* espaço antes do avatar */
-  box-shadow: 0 10px 26px rgba(0,0,0,.10);
-}
-
-.nav-toggle span{
-  width: 18px;
-  height: 2px;
-  background: #f97316;
-  border-radius: 999px;
-  display: block;
-  transition: transform .18s ease, opacity .18s ease;
-}
-
-.nav-toggle.open span:nth-child(1){
-  transform: translateY(8px) rotate(45deg);
-}
-.nav-toggle.open span:nth-child(2){
-  opacity: 0;
-}
-.nav-toggle.open span:nth-child(3){
-  transform: translateY(-8px) rotate(-45deg);
-}
-
-/* overlay do menu */
-.mobile-nav-overlay{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.28);
-  z-index: 2000;
-}
-
-/* painel dropdown */
-.mobile-nav-panel{
-  position: absolute;
-  top: 72px;           /* fica abaixo do header */
-  left: 16px;
-  right: 16px;
-
-  background: #fff;
-  border: 1px solid rgba(15,23,42,.12);
-  border-radius: 16px;
-  padding: 10px;
-
-  box-shadow: 0 18px 45px rgba(0,0,0,.18);
-}
-
-.mobile-nav-link{
-  width: 100%;
-  border: none;
-  background: none;
-  cursor: pointer;
-
-  padding: 12px 12px;
-  border-radius: 12px;
-
-  display: flex;
-  align-items: center;
-
-  font-size: 14px;
-  color: #374151;
-  text-align: left;
-}
-
-.mobile-nav-link:hover{
-  background: rgba(249,115,22,.08);
-}
-
-.mobile-nav-link.active{
-  background: rgba(249,115,22,.12);
-  color: #f97316;
-  font-weight: 600;
-}
-
-/* =========================
-   ✅ MOBILE BREAKPOINT
-   ========================= */
-@media (max-width: 768px){
-  /* esconde nav normal no mobile */
-  .header-center{
-    display: none;
-  }
-
-  /* header fica 1 linha (logo esquerda, controls direita) */
-  .dashboard-header{
-    padding: 12px 16px;
-    height: auto;
-    gap: 12px;
-  }
-
-  .dashboard-logo-text{
-    font-size: 18px;
-  }
-
-  /* mostra hamburger no mobile */
-  .nav-toggle{
-    display: flex;
-  }
-}
-
-/* mobile pequeno */
-@media (max-width: 420px){
-  .mobile-nav-panel{
-    top: 68px;
-    left: 12px;
-    right: 12px;
-  }
-
-  .dashboard-logo-text{
-    font-size: 16px;
-  }
-
-  .nav-toggle{
-    width: 40px;
-    height: 40px;
-  }
-}
-
-/* =========================
-   ✅ FIX: HEADER 1 LINHA NO MOBILE
-   (nada do navbar a descer)
-   ========================= */
-
-@media (max-width: 768px) {
-  /* HEADER vira 1 linha */
+  /* HEADER: 1 linha SEM descer nada */
   .dashboard-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    flex-wrap: nowrap !important;  /* 🔥 não deixa quebrar */
-    height: 68px;                  /* mantém igual ao desktop */
+    flex-wrap: nowrap;
+    height: 68px;
     padding: 0 16px;
     gap: 10px;
 
-    position: sticky;              /* opcional, mas fica top */
+    position: sticky;
     top: 0;
     z-index: 1500;
   }
 
-  /* Logo não pode empurrar */
+  /* some a nav normal */
+  .header-center {
+    display: none;
+  }
+
+  /* logo encolhe com ellipsis */
   .dashboard-logo {
     flex: 1 1 auto;
     min-width: 0;
@@ -1039,43 +718,100 @@
     text-overflow: ellipsis;
   }
 
-  /* ✅ ESCONDER o nav normal no mobile (isto é o que está a aparecer “Home/My Exercises”) */
-  .header-center {
-    display: none !important;
-  }
-
-  /* Right controls sempre na direita */
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 0 0 auto;
-  }
-
-  /* Hamburger aparece e NÃO mexe no layout */
+  /* mostra hamburger no mobile */
   .nav-toggle {
-    display: flex !important;
+    display: flex;
     flex: 0 0 auto;
   }
 
-  /* Avatar não encolhe nem salta */
   .dashboard-user-circle {
     flex: 0 0 auto;
   }
 
-  /* Menu mobile overlay fica abaixo do header fixo */
-  .mobile-nav-panel {
-    top: 76px; /* header 68 + margem */
+  /* main compacto */
+  .dashboard-main {
+    padding: 16px;
+    gap: 18px;
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-search {
+    height: 52px;
+    padding: 8px 14px;
+  }
+
+  .dashboard-filters {
+    gap: 8px;
+  }
+
+  .filter-pill {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  .exercise-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .exercise-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-top: 16px;
+  }
+
+  .exercise-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* no mobile: sidebar NÃO sticky */
+  .dashboard-right {
+    position: static;
+    height: auto;
+    align-self: stretch;
+  }
+
+  .share-card {
+    padding: 20px;
+  }
+
+  .share-card p {
+    margin-bottom: 22px;
+  }
+
+  .activity-card {
+    max-height: 300px;
   }
 }
 
-/* mobile muito pequeno: reduzir um bocado o logo */
 @media (max-width: 420px) {
   .dashboard-logo-icon {
     width: 34px;
     height: 34px;
   }
+
   .dashboard-logo-text {
     font-size: 16px;
+  }
+
+  .nav-toggle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .mobile-nav-panel {
+    left: 12px;
+    right: 12px;
+    top: 72px;
+  }
+
+  .exercise-title {
+    font-size: 16px;
+  }
+
+  .exercise-description {
+    font-size: 12px;
   }
 }
