@@ -868,3 +868,139 @@
     display: block;
   }
 }
+
+/* =========================
+   ✅ MOBILE NAV (HAMBURGER + DROPDOWN)
+   ========================= */
+
+/* hamburger: escondido no desktop */
+.nav-toggle{
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(15,23,42,.12);
+  background: #fff;
+  border-radius: 12px;
+  cursor: pointer;
+
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+
+  margin-right: 10px; /* espaço antes do avatar */
+  box-shadow: 0 10px 26px rgba(0,0,0,.10);
+}
+
+.nav-toggle span{
+  width: 18px;
+  height: 2px;
+  background: #f97316;
+  border-radius: 999px;
+  display: block;
+  transition: transform .18s ease, opacity .18s ease;
+}
+
+.nav-toggle.open span:nth-child(1){
+  transform: translateY(8px) rotate(45deg);
+}
+.nav-toggle.open span:nth-child(2){
+  opacity: 0;
+}
+.nav-toggle.open span:nth-child(3){
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* overlay do menu */
+.mobile-nav-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.28);
+  z-index: 2000;
+}
+
+/* painel dropdown */
+.mobile-nav-panel{
+  position: absolute;
+  top: 72px;           /* fica abaixo do header */
+  left: 16px;
+  right: 16px;
+
+  background: #fff;
+  border: 1px solid rgba(15,23,42,.12);
+  border-radius: 16px;
+  padding: 10px;
+
+  box-shadow: 0 18px 45px rgba(0,0,0,.18);
+}
+
+.mobile-nav-link{
+  width: 100%;
+  border: none;
+  background: none;
+  cursor: pointer;
+
+  padding: 12px 12px;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+
+  font-size: 14px;
+  color: #374151;
+  text-align: left;
+}
+
+.mobile-nav-link:hover{
+  background: rgba(249,115,22,.08);
+}
+
+.mobile-nav-link.active{
+  background: rgba(249,115,22,.12);
+  color: #f97316;
+  font-weight: 600;
+}
+
+/* =========================
+   ✅ MOBILE BREAKPOINT
+   ========================= */
+@media (max-width: 768px){
+  /* esconde nav normal no mobile */
+  .header-center{
+    display: none;
+  }
+
+  /* header fica 1 linha (logo esquerda, controls direita) */
+  .dashboard-header{
+    padding: 12px 16px;
+    height: auto;
+    gap: 12px;
+  }
+
+  .dashboard-logo-text{
+    font-size: 18px;
+  }
+
+  /* mostra hamburger no mobile */
+  .nav-toggle{
+    display: flex;
+  }
+}
+
+/* mobile pequeno */
+@media (max-width: 420px){
+  .mobile-nav-panel{
+    top: 68px;
+    left: 12px;
+    right: 12px;
+  }
+
+  .dashboard-logo-text{
+    font-size: 16px;
+  }
+
+  .nav-toggle{
+    width: 40px;
+    height: 40px;
+  }
+}

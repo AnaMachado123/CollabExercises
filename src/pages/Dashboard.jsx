@@ -1,6 +1,6 @@
 // src/pages/Dashboard.jsx
 import "./Dashboard.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { apiRequest } from "../services/api";
 import RecentActivity from "../components/RecentActivity";
@@ -12,11 +12,8 @@ function Dashboard() {
   // dropdown user
   const [openUserMenu, setOpenUserMenu] = useState(false);
 
-  // ✅ mobile menu (hambúrguer)
+  // ✅ mobile nav
   const [openMobileNav, setOpenMobileNav] = useState(false);
-
-  const headerRightRef = useRef(null);
-  const mobileNavRef = useRef(null);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -46,6 +43,12 @@ function Dashboard() {
     if (!token) navigate("/login");
   }, [navigate]);
 
+  // ✅ fecha menus quando mudas de página
+  useEffect(() => {
+    setOpenMobileNav(false);
+    setOpenUserMenu(false);
+  }, [location.pathname]);
+
   // fetch exercises
   useEffect(() => {
     const fetchExercises = async () => {
@@ -72,38 +75,11 @@ function Dashboard() {
 
   const subjects = ["All", ...new Set(exercises.map((e) => e.subject).filter(Boolean))];
 
-  // ✅ helper: navegar e fechar menus
+  // ✅ helper para navegar e fechar o menu mobile
   const go = (path) => {
     setOpenMobileNav(false);
-    setOpenUserMenu(false);
     navigate(path);
   };
-
-  // ✅ fechar menus ao clicar fora
-  useEffect(() => {
-    const onDocMouseDown = (e) => {
-      // user dropdown
-      if (headerRightRef.current && !headerRightRef.current.contains(e.target)) {
-        setOpenUserMenu(false);
-      }
-      // mobile nav dropdown
-      if (mobileNavRef.current && !mobileNavRef.current.contains(e.target)) {
-        setOpenMobileNav(false);
-      }
-    };
-
-    document.addEventListener("mousedown", onDocMouseDown);
-    return () => document.removeEventListener("mousedown", onDocMouseDown);
-  }, []);
-
-  // ✅ se passar para desktop, fecha menu mobile
-  useEffect(() => {
-    const onResize = () => {
-      if (window.innerWidth > 768) setOpenMobileNav(false);
-    };
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
 
   return (
     <div className="dashboard-page">
@@ -111,7 +87,7 @@ function Dashboard() {
       <header className="dashboard-header">
         <div
           className="dashboard-logo"
-          onClick={() => go("/dashboard")}
+          onClick={() => navigate("/dashboard")}
           role="button"
           tabIndex={0}
         >
@@ -121,12 +97,12 @@ function Dashboard() {
           <span className="dashboard-logo-text">CollabExercises</span>
         </div>
 
-        {/* NAV DESKTOP */}
+        {/* Desktop nav (mobile vai esconder via CSS) */}
         <div className="header-center">
           <nav className="dashboard-nav">
             <button
               className={`nav-link ${location.pathname === "/dashboard" ? "nav-link--active" : ""}`}
-              onClick={() => go("/dashboard")}
+              onClick={() => navigate("/dashboard")}
               type="button"
             >
               Home
@@ -134,7 +110,7 @@ function Dashboard() {
 
             <button
               className={`nav-link ${location.pathname === "/my-exercises" ? "nav-link--active" : ""}`}
-              onClick={() => go("/my-exercises")}
+              onClick={() => navigate("/my-exercises")}
               type="button"
             >
               My Exercises
@@ -142,7 +118,7 @@ function Dashboard() {
 
             <button
               className={`nav-link ${location.pathname === "/my-solutions" ? "nav-link--active" : ""}`}
-              onClick={() => go("/my-solutions")}
+              onClick={() => navigate("/my-solutions")}
               type="button"
             >
               My Solutions
@@ -150,7 +126,7 @@ function Dashboard() {
 
             <button
               className={`nav-link ${location.pathname === "/my-saved" ? "nav-link--active" : ""}`}
-              onClick={() => go("/my-saved")}
+              onClick={() => navigate("/my-saved")}
               type="button"
             >
               My Saved
@@ -158,68 +134,24 @@ function Dashboard() {
           </nav>
         </div>
 
-        {/* RIGHT: mobile btn + user */}
-        <div className="header-right" style={{ position: "relative" }} ref={headerRightRef}>
-          {/* ✅ HAMBÚRGUER (aparece só no mobile via CSS) */}
-          <div className="mobile-nav-wrap" ref={mobileNavRef}>
-            <button
-              className={`mobile-menu-btn ${openMobileNav ? "open" : ""}`}
-              type="button"
-              aria-label="Open menu"
-              aria-expanded={openMobileNav}
-              onClick={() => {
-                setOpenMobileNav((v) => !v);
-                setOpenUserMenu(false);
-              }}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
+        {/* Right controls */}
+        <div className="header-right" style={{ position: "relative" }}>
+          {/* ✅ hamburger (só aparece no mobile via CSS) */}
+          <button
+            type="button"
+            className={`nav-toggle ${openMobileNav ? "open" : ""}`}
+            aria-label="Open menu"
+            onClick={() => setOpenMobileNav((v) => !v)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
 
-            {/* ✅ DROPDOWN MOBILE */}
-            <div className={`mobile-nav ${openMobileNav ? "open" : ""}`}>
-              <button
-                type="button"
-                className={`mobile-nav-item ${location.pathname === "/dashboard" ? "active" : ""}`}
-                onClick={() => go("/dashboard")}
-              >
-                Home
-              </button>
-
-              <button
-                type="button"
-                className={`mobile-nav-item ${location.pathname === "/my-exercises" ? "active" : ""}`}
-                onClick={() => go("/my-exercises")}
-              >
-                My Exercises
-              </button>
-
-              <button
-                type="button"
-                className={`mobile-nav-item ${location.pathname === "/my-solutions" ? "active" : ""}`}
-                onClick={() => go("/my-solutions")}
-              >
-                My Solutions
-              </button>
-
-              <button
-                type="button"
-                className={`mobile-nav-item ${location.pathname === "/my-saved" ? "active" : ""}`}
-                onClick={() => go("/my-saved")}
-              >
-                My Saved
-              </button>
-            </div>
-          </div>
-
-          {/* USER CIRCLE */}
+          {/* USER + DROPDOWN */}
           <div
             className={`dashboard-user-circle ${openUserMenu ? "user-open" : ""}`}
-            onClick={() => {
-              setOpenUserMenu((v) => !v);
-              setOpenMobileNav(false);
-            }}
+            onClick={() => setOpenUserMenu((v) => !v)}
             role="button"
             tabIndex={0}
             title={user?.name}
@@ -228,7 +160,7 @@ function Dashboard() {
           </div>
 
           <div className={`user-dropdown ${openUserMenu ? "open" : ""}`}>
-            <button type="button" onClick={() => go("/profile")}>
+            <button type="button" onClick={() => navigate("/profile")}>
               <i className="fa-regular fa-user" />
               Profile
             </button>
@@ -239,6 +171,49 @@ function Dashboard() {
             </button>
           </div>
         </div>
+
+        {/* ✅ Mobile dropdown menu (overlay) */}
+        {openMobileNav && (
+          <div
+            className="mobile-nav-overlay"
+            onClick={() => setOpenMobileNav(false)}
+            role="presentation"
+          >
+            <div className="mobile-nav-panel" onClick={(e) => e.stopPropagation()}>
+              <button
+                className={`mobile-nav-link ${location.pathname === "/dashboard" ? "active" : ""}`}
+                type="button"
+                onClick={() => go("/dashboard")}
+              >
+                Home
+              </button>
+
+              <button
+                className={`mobile-nav-link ${location.pathname === "/my-exercises" ? "active" : ""}`}
+                type="button"
+                onClick={() => go("/my-exercises")}
+              >
+                My Exercises
+              </button>
+
+              <button
+                className={`mobile-nav-link ${location.pathname === "/my-solutions" ? "active" : ""}`}
+                type="button"
+                onClick={() => go("/my-solutions")}
+              >
+                My Solutions
+              </button>
+
+              <button
+                className={`mobile-nav-link ${location.pathname === "/my-saved" ? "active" : ""}`}
+                type="button"
+                onClick={() => go("/my-saved")}
+              >
+                My Saved
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* ================= MAIN ================= */}
@@ -270,11 +245,9 @@ function Dashboard() {
             ))}
           </div>
 
-          {/* States */}
           {loading && <p>Loading exercises...</p>}
           {error && <p className="error-text">{error}</p>}
 
-          {/* Exercise list */}
           {!loading &&
             !error &&
             exercises.map((ex) => (
