@@ -30,7 +30,7 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 12px; /* ✅ para caber o hambúrguer + user */
+  gap: 12px; /* hambúrguer + user */
 }
 
 /* Logo */
@@ -38,6 +38,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
 }
 
 .dashboard-logo-icon {
@@ -92,22 +93,23 @@
   align-items: center;
   justify-content: center;
   font-weight: 600;
+  flex: 0 0 auto;
 }
 
 /* USER DROPDOWN */
-.user-dropdown{
+.user-dropdown {
   position: absolute;
   top: 52px;
   right: 0;
 
   background: #ffffff;
-  border: 1px solid rgba(15,23,42,.10);
+  border: 1px solid rgba(15, 23, 42, 0.10);
   border-radius: 14px;
   min-width: 180px;
   padding: 8px;
 
-  box-shadow: 0 18px 45px rgba(0,0,0,.18);
-  z-index: 999;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+  z-index: 1300;
 
   opacity: 0;
   transform: translateY(-8px) scale(.98);
@@ -115,17 +117,16 @@
 
   transition:
     opacity .18s ease,
-    transform .18s cubic-bezier(.16,1,.3,1);
+    transform .18s cubic-bezier(.16, 1, .3, 1);
 }
 
-/* estado aberto */
-.user-dropdown.open{
+.user-dropdown.open {
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: auto;
 }
 
-.user-dropdown::before{
+.user-dropdown::before {
   content: "";
   position: absolute;
   top: -8px;
@@ -133,12 +134,12 @@
   width: 14px;
   height: 14px;
   background: #fff;
-  border-left: 1px solid rgba(15,23,42,.10);
-  border-top: 1px solid rgba(15,23,42,.10);
+  border-left: 1px solid rgba(15, 23, 42, 0.10);
+  border-top: 1px solid rgba(15, 23, 42, 0.10);
   transform: rotate(45deg);
 }
 
-.user-dropdown button{
+.user-dropdown button {
   width: 100%;
   padding: 10px 12px;
   border: none;
@@ -154,21 +155,21 @@
   border-radius: 8px;
 }
 
-.user-dropdown button:hover{
-  background: rgba(249,115,22,.08);
+.user-dropdown button:hover {
+  background: rgba(249, 115, 22, .08);
 }
 
-.user-dropdown .danger:hover{
-  background: rgba(239,68,68,.10);
+.user-dropdown .danger:hover {
+  background: rgba(239, 68, 68, .10);
 }
 
-.user-dropdown .danger i{
+.user-dropdown .danger i {
   color: #ef4444;
 }
 
-.dashboard-user-circle.user-open{
-  box-shadow: 0 0 0 4px rgba(249,115,22,.18);
-  border: 1px solid rgba(249,115,22,.35);
+.dashboard-user-circle.user-open {
+  box-shadow: 0 0 0 4px rgba(249, 115, 22, .18);
+  border: 1px solid rgba(249, 115, 22, .35);
 }
 
 /* MAIN LAYOUT */
@@ -224,7 +225,6 @@
   gap: 10px;
 }
 
-/* todos os botões */
 .filter-pill {
   border-radius: 999px;
   padding: 6px 18px;
@@ -237,14 +237,12 @@
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-/* hover dos filtros (fica igual ao All ativo) */
 .filter-pill:hover {
   background-color: #f97316;
   color: #ffffff;
   border-color: #f97316;
 }
 
-/* o ativo (All) cheio de laranja */
 .filter-pill--active {
   background-color: #f97316;
   color: #ffffff;
@@ -318,6 +316,19 @@
   padding-bottom: 10px;
 }
 
+.exercise-title,
+.exercise-description {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* Footer */
 .exercise-card-footer {
   margin-top: 4px;
@@ -355,9 +366,13 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  align-self: start;
+  position: sticky;
+  top: 20px;
+  height: calc(100vh - 20px);
 }
 
-/* Share card */
 .share-card {
   width: 483.98px;
   height: 275.82px;
@@ -367,6 +382,7 @@
   color: #ffffff;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  flex: 0 0 auto;
 }
 
 .share-card:hover {
@@ -376,7 +392,6 @@
     0 0 0 4px rgba(249, 115, 22, 0.15);
 }
 
-/* título e parágrafo alinhados à esquerda */
 .share-card h2,
 .share-card p {
   text-align: left;
@@ -431,6 +446,9 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .activity-header {
@@ -479,406 +497,26 @@
   background: transparent;
 }
 
-.activity-item {
-  margin-bottom: 14px;
-}
-
-.activity-line {
-  font-size: 14px;
-}
-
-.activity-name {
-  font-weight: 600;
-  color: #222222;
-}
-
-.activity-action {
-  color: #7b7b7b;
-  margin: 0 4px;
-}
-
-.activity-link {
-  color: #f97316;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.activity-time {
-  font-size: 12px;
-  color: #a3a3a3;
-  margin-top: 2px;
-}
-
-/* Pequena responsividade */
-@media (max-width: 1024px) {
-  .dashboard-main {
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-right {
-    order: -1;
-  }
-}
-
-/* ✅ cards ficam consistentes */
-.exercise-card {
-  width: 100%;
-  max-width: 100%;
-}
-
-/* ✅ o conteúdo não “rebenta” */
-.exercise-title,
-.exercise-description {
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-/* ✅ cortar texto bonito (sem destruir layout) */
-.clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* ✅ difficulty pills */
+/* difficulty pills */
 .difficulty-pill {
   border: 1px solid currentColor;
   background: transparent;
   font-weight: 600;
 }
-
-/* Beginner = verde */
-.difficulty-beginner {
-  color: #2e7d32;
-}
-
-/* Intermediate = laranja */
-.difficulty-intermediate {
-  color: #f57c00;
-}
-
-/* Advanced = vermelho */
-.difficulty-advanced {
-  color: #d32f2f;
-}
-
-/* ✅ responsivo (mobile/tablet) */
-@media (max-width: 900px) {
-  .dashboard-main {
-    flex-direction: column;
-  }
-
-  .dashboard-left,
-  .dashboard-right {
-    width: 100%;
-  }
-
-  .dashboard-search input {
-    width: 100%;
-  }
-}
+.difficulty-beginner { color: #2e7d32; }
+.difficulty-intermediate { color: #f57c00; }
+.difficulty-advanced { color: #d32f2f; }
 
 /* =========================
-   STICKY SIDEBAR (RIGHT)
+   ✅ MOBILE NAV (ESSENCIAL)
    ========================= */
 
-.dashboard-right{
-  align-self: start;
-
-  position: sticky;
-  top: 20px;
-
-  height: calc(100vh - 20px);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.share-card,
-.activity-card{
-  position: static;
-}
-
-.share-card{
-  flex: 0 0 auto;
-}
-
-.activity-card{
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.activity-list{
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-}
-
-/* =========================================================
-   ✅ RESPONSIVO EXTRA (SEM MEXER NO TEU DESIGN)
-   ========================================================= */
-
-@media (max-width: 1200px) {
-  .dashboard-search {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .exercise-card {
-    max-width: 100%;
-  }
-
-  .share-card,
-  .activity-card {
-    width: 100%;
-  }
-
-  .share-button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 1024px) {
-  .dashboard-header {
-    padding: 0 20px;
-    gap: 20px;
-  }
-
-  .dashboard-main {
-    padding: 20px;
-    grid-template-columns: 1fr;
-  }
-
-  .dashboard-right{
-    position: static;
-    height: auto;
-    align-self: stretch;
-  }
-
-  .share-card,
-  .activity-card{
-    height: auto;
-  }
-
-  .activity-card{
-    max-height: 320px;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard-header{
-    height: auto;
-    padding: 12px 16px;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .header-center{
-    flex: 1 1 100%;
-    justify-content: flex-start;
-  }
-
-  .dashboard-nav{
-    flex-wrap: wrap;
-    gap: 14px;
-  }
-
-  .nav-link,
-  .nav-link--active{
-    font-size: 14px;
-  }
-
-  .dashboard-main{
-    padding: 16px;
-    gap: 18px;
-  }
-
-  .dashboard-search{
-    height: 52px;
-    padding: 8px 14px;
-  }
-
-  .dashboard-filters{
-    gap: 8px;
-  }
-
-  .filter-pill{
-    padding: 6px 14px;
-    font-size: 12px;
-  }
-
-  .exercise-card{
-    padding: 18px;
-    border-radius: 16px;
-  }
-
-  .exercise-card-footer{
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding-top: 16px;
-  }
-
-  .exercise-button{
-    width: 100%;
-    text-align: center;
-  }
-
-  .share-card{
-    padding: 20px;
-  }
-
-  .share-card p{
-    margin-bottom: 22px;
-  }
-
-  .activity-card{
-    max-height: 300px;
-  }
-}
-
-@media (max-width: 420px) {
-  .dashboard-logo-text{
-    font-size: 16px;
-  }
-
-  .dashboard-logo-icon{
-    width: 36px;
-    height: 36px;
-  }
-
-  .exercise-title{
-    font-size: 16px;
-  }
-
-  .exercise-description{
-    font-size: 12px;
-  }
-}
-
-/* =========================
-   ✅ NAVBAR MOBILE (HAMBURGUER + DROPDOWN)
-   ========================= */
-
-/* wrapper do botão + dropdown */
-.mobile-nav-wrap{
-  position: relative;
-  display: none; /* só aparece no mobile */
-}
-
-/* botão hambúrguer */
-.mobile-menu-btn{
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: #ffffff;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  padding: 0;
-}
-
-.mobile-menu-btn span{
-  display: block;
-  width: 18px;
-  height: 2px;
-  background: #f97316;
-  border-radius: 999px;
-  transition: transform .18s ease, opacity .18s ease;
-  margin: 2px 0;
-}
-
-/* animação X */
-.mobile-menu-btn.open span:nth-child(1){
-  transform: translateY(4px) rotate(45deg);
-}
-.mobile-menu-btn.open span:nth-child(2){
-  opacity: 0;
-}
-.mobile-menu-btn.open span:nth-child(3){
-  transform: translateY(-4px) rotate(-45deg);
-}
-
-/* dropdown do mobile */
-.mobile-nav{
-  position: absolute;
-  top: 48px;
-  right: 0;
-
-  width: 220px;
-  padding: 8px;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid rgba(15,23,42,.10);
-  box-shadow: 0 18px 45px rgba(0,0,0,.18);
-  z-index: 999;
-
-  opacity: 0;
-  transform: translateY(-8px) scale(.98);
-  pointer-events: none;
-
-  transition:
-    opacity .18s ease,
-    transform .18s cubic-bezier(.16,1,.3,1);
-}
-
-.mobile-nav.open{
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  pointer-events: auto;
-}
-
-.mobile-nav-item{
-  width: 100%;
-  padding: 10px 12px;
-  border: none;
-  background: none;
-  cursor: pointer;
-
-  text-align: left;
-  font-size: 14px;
-  color: #374151;
-  border-radius: 10px;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.mobile-nav-item:hover{
-  background: rgba(249,115,22,.08);
-}
-
-.mobile-nav-item.active{
-  background: rgba(249,115,22,.12);
-  color: #f97316;
-  font-weight: 600;
-}
-
-/* ✅ no mobile: esconde a nav normal e mostra hambúrguer */
-@media (max-width: 768px){
-  .dashboard-nav{
-    display: none;
-  }
-
-  .mobile-nav-wrap{
-    display: block;
-  }
-}
-
-/* =========================
-   ✅ MOBILE NAV (HAMBURGER + DROPDOWN)
-   ========================= */
-
-/* hamburger: escondido no desktop */
-.nav-toggle{
+/* hambúrguer (só mobile) */
+.nav-toggle {
   display: none;
   width: 42px;
   height: 42px;
-  border: 1px solid rgba(15,23,42,.12);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   background: #fff;
   border-radius: 12px;
   cursor: pointer;
@@ -888,11 +526,11 @@
   flex-direction: column;
   gap: 6px;
 
-  margin-right: 10px; /* espaço antes do avatar */
-  box-shadow: 0 10px 26px rgba(0,0,0,.10);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.10);
+  flex: 0 0 auto;
 }
 
-.nav-toggle span{
+.nav-toggle span {
   width: 18px;
   height: 2px;
   background: #f97316;
@@ -901,40 +539,39 @@
   transition: transform .18s ease, opacity .18s ease;
 }
 
-.nav-toggle.open span:nth-child(1){
+.nav-toggle.open span:nth-child(1) {
   transform: translateY(8px) rotate(45deg);
 }
-.nav-toggle.open span:nth-child(2){
+.nav-toggle.open span:nth-child(2) {
   opacity: 0;
 }
-.nav-toggle.open span:nth-child(3){
+.nav-toggle.open span:nth-child(3) {
   transform: translateY(-8px) rotate(-45deg);
 }
 
-/* overlay do menu */
-.mobile-nav-overlay{
+/* overlay + painel do menu */
+.mobile-nav-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.28);
+  background: rgba(0, 0, 0, 0.28);
   z-index: 2000;
 }
 
-/* painel dropdown */
-.mobile-nav-panel{
+.mobile-nav-panel {
   position: absolute;
-  top: 72px;           /* fica abaixo do header */
+  top: 76px; /* abaixo do header */
   left: 16px;
   right: 16px;
 
   background: #fff;
-  border: 1px solid rgba(15,23,42,.12);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 16px;
   padding: 10px;
 
-  box-shadow: 0 18px 45px rgba(0,0,0,.18);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
 }
 
-.mobile-nav-link{
+.mobile-nav-link {
   width: 100%;
   border: none;
   background: none;
@@ -951,83 +588,87 @@
   text-align: left;
 }
 
-.mobile-nav-link:hover{
-  background: rgba(249,115,22,.08);
+.mobile-nav-link:hover {
+  background: rgba(249, 115, 22, 0.08);
 }
 
-.mobile-nav-link.active{
-  background: rgba(249,115,22,.12);
+.mobile-nav-link.active {
+  background: rgba(249, 115, 22, 0.12);
   color: #f97316;
   font-weight: 600;
 }
 
 /* =========================
-   ✅ MOBILE BREAKPOINT
+   ✅ RESPONSIVO ESSENCIAL
    ========================= */
-@media (max-width: 768px){
-  /* esconde nav normal no mobile */
-  .header-center{
-    display: none;
+
+@media (max-width: 1200px) {
+  .dashboard-search {
+    width: 100%;
+    max-width: 100%;
   }
 
-  /* header fica 1 linha (logo esquerda, controls direita) */
-  .dashboard-header{
-    padding: 12px 16px;
+  .share-card,
+  .activity-card {
+    width: 100%;
+  }
+
+  .share-button {
+    width: 100%;
+  }
+
+  .exercise-card {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dashboard-main {
+    padding: 20px;
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-right {
+    position: static;   /* tira sticky */
     height: auto;
-    gap: 12px;
+    align-self: stretch;
+    order: -1;
   }
 
-  .dashboard-logo-text{
-    font-size: 18px;
+  .share-card,
+  .activity-card {
+    height: auto;
   }
 
-  /* mostra hamburger no mobile */
-  .nav-toggle{
-    display: flex;
-  }
-}
-
-/* mobile pequeno */
-@media (max-width: 420px){
-  .mobile-nav-panel{
-    top: 68px;
-    left: 12px;
-    right: 12px;
+  .activity-card {
+    max-height: 320px;
   }
 
-  .dashboard-logo-text{
-    font-size: 16px;
-  }
-
-  .nav-toggle{
-    width: 40px;
-    height: 40px;
+  .dashboard-header {
+    padding: 0 20px;
+    gap: 20px;
   }
 }
-
-/* =========================
-   ✅ FIX: HEADER 1 LINHA NO MOBILE
-   (nada do navbar a descer)
-   ========================= */
 
 @media (max-width: 768px) {
-  /* HEADER vira 1 linha */
+  /* header 1 linha SEM nav a descer */
   .dashboard-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    flex-wrap: nowrap !important;  /* 🔥 não deixa quebrar */
-    height: 68px;                  /* mantém igual ao desktop */
+    flex-wrap: nowrap;
+    height: 68px;
     padding: 0 16px;
     gap: 10px;
 
-    position: sticky;              /* opcional, mas fica top */
+    position: sticky;
     top: 0;
     z-index: 1500;
   }
 
-  /* Logo não pode empurrar */
+  /* esconde nav normal */
+  .header-center {
+    display: none;
+  }
+
+  /* logo com ... */
   .dashboard-logo {
     flex: 1 1 auto;
     min-width: 0;
@@ -1039,43 +680,91 @@
     text-overflow: ellipsis;
   }
 
-  /* ✅ ESCONDER o nav normal no mobile (isto é o que está a aparecer “Home/My Exercises”) */
-  .header-center {
-    display: none !important;
-  }
-
-  /* Right controls sempre na direita */
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 0 0 auto;
-  }
-
-  /* Hamburger aparece e NÃO mexe no layout */
+  /* mostra hambúrguer */
   .nav-toggle {
-    display: flex !important;
-    flex: 0 0 auto;
+    display: flex;
   }
 
-  /* Avatar não encolhe nem salta */
-  .dashboard-user-circle {
-    flex: 0 0 auto;
+  /* layout */
+  .dashboard-main {
+    padding: 16px;
+    gap: 18px;
+    grid-template-columns: 1fr;
   }
 
-  /* Menu mobile overlay fica abaixo do header fixo */
-  .mobile-nav-panel {
-    top: 76px; /* header 68 + margem */
+  .dashboard-search {
+    height: 52px;
+    padding: 8px 14px;
+  }
+
+  .filter-pill {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  .exercise-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .exercise-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding-top: 16px;
+  }
+
+  .exercise-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* sidebar no mobile não é sticky */
+  .dashboard-right {
+    position: static;
+    height: auto;
+    align-self: stretch;
+  }
+
+  .share-card {
+    padding: 20px;
+  }
+
+  .share-card p {
+    margin-bottom: 22px;
+  }
+
+  .activity-card {
+    max-height: 300px;
   }
 }
 
-/* mobile muito pequeno: reduzir um bocado o logo */
 @media (max-width: 420px) {
   .dashboard-logo-icon {
     width: 34px;
     height: 34px;
   }
+
   .dashboard-logo-text {
     font-size: 16px;
+  }
+
+  .nav-toggle {
+    width: 40px;
+    height: 40px;
+  }
+
+  .mobile-nav-panel {
+    left: 12px;
+    right: 12px;
+    top: 72px;
+  }
+
+  .exercise-title {
+    font-size: 16px;
+  }
+
+  .exercise-description {
+    font-size: 12px;
   }
 }
