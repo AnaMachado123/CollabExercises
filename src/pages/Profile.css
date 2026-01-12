@@ -173,11 +173,12 @@
 
 .profile-header{
   margin-bottom: 22px;
+  text-align: center;
 }
 
 .profile-header h1{
-  font-size: 32px;
-  font-weight: 600;
+  font-size: 42px;
+  font-weight: 800;
   margin: 0 0 6px;
 }
 
@@ -192,6 +193,7 @@
    ========================= */
 .profile-card{
   max-width: 980px;
+  margin: 0 auto;
   border-radius: 18px;
   background: #fff;
   border: 1px solid #f1f1f1;
@@ -200,12 +202,13 @@
 }
 
 /* =========================
-   TOP (AVATAR + INFO)
+   TOP (AVATAR + INFO + STATS RIGHT)
    ========================= */
 .profile-top{
+  position: relative; /* ✅ para o absolute dos stats funcionar */
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .profile-avatar{
@@ -222,11 +225,13 @@
   flex: 0 0 auto;
 }
 
+/* ✅ reservamos espaço à direita para não bater nos stats */
 .profile-top-info{
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  padding-right: 260px; /* ✅ espaço para os stats à direita */
 }
 
 .profile-name{
@@ -251,21 +256,26 @@
   color: #9ca3af;
 }
 
-/* ✅ STATS: sem absolute, sem overlap */
+/* ✅ STATS sempre à direita */
 .profile-stats{
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+
   display: flex;
-  gap: 14px;
-  margin-top: 6px;
-  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+
   color: #6b7280;
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .profile-stats .stat{
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap;
 }
 
 .profile-stats .stat i{
@@ -273,7 +283,7 @@
 }
 
 .stat-number{
-  font-weight: 700;
+  font-weight: 800;
   color: #111827;
 }
 
@@ -345,7 +355,7 @@
 
 .profile-actions{
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 14px;
   margin-top: 18px;
 }
@@ -366,6 +376,7 @@
   border-radius: 999px;
   font-size: 14px;
   cursor: pointer;
+  flex: 1;
 }
 
 .view-btn:disabled{
@@ -386,6 +397,7 @@
 .account-title{
   font-size: 13px;
   font-weight: 700;
+  text-align: center;
 }
 
 .account-item{
@@ -411,21 +423,40 @@
     padding: 0 18px;
     gap: 18px;
   }
-}
 
-@media (max-width: 520px){
-  .profile-top{
-    flex-direction: column;
-    align-items: flex-start;
+  /* menos espaço para stats */
+  .profile-top-info{
+    padding-right: 210px;
   }
 
-  /* ✅ mobile: só ícone + número (labels desaparecem) */
   .profile-stats{
     gap: 12px;
   }
+}
+
+/* ✅ telemóvel: stats continuam à direita e ficam só ícones + número */
+@media (max-width: 520px){
+  .profile-top{
+    align-items: flex-start;
+  }
+
+  .profile-top-info{
+    padding-right: 132px; /* ✅ espaço para stats compactos */
+  }
+
+  .profile-stats{
+    right: 0;
+    top: 14px;
+    transform: none;
+
+    flex-direction: column; /* ✅ coluna à direita */
+    align-items: flex-end;
+    gap: 10px;
+    font-size: 12px;
+  }
 
   .stat-label{
-    display: none;
+    display: none; /* ✅ some o texto */
   }
 
   .profile-actions{
