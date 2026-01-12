@@ -133,7 +133,6 @@ export default function Profile() {
       setProfile(next);
       setForm({ name: next.name, email: next.email });
 
-      // atualiza o user local também (para o dashboard/navbar)
       localStorage.setItem("user", JSON.stringify({ ...data }));
 
       setToast("Profile updated successfully.");
@@ -280,26 +279,30 @@ export default function Profile() {
 
               <div className="profile-top-info">
                 <div className="profile-name">{profile.name}</div>
+
+                <div className="profile-stats" aria-label="Profile stats">
+                  <span className="stat">
+                    <i className="fa-regular fa-file-lines" />
+                    <span className="stat-number">{profile.stats.exercises}</span>
+                    <span className="stat-label">Exercises</span>
+                  </span>
+
+                  <span className="stat">
+                    <i className="fa-regular fa-lightbulb" />
+                    <span className="stat-number">{profile.stats.solutions}</span>
+                    <span className="stat-label">Solutions</span>
+                  </span>
+
+                  <span className="stat">
+                    <i className="fa-regular fa-bookmark" />
+                    <span className="stat-number">{profile.stats.saved}</span>
+                    <span className="stat-label">Saved</span>
+                  </span>
+                </div>
+
                 <div className="profile-email">{profile.email}</div>
                 <div className="profile-since">
                   Member since · {profile.memberSince}
-                </div>
-
-                <div className="profile-stats">
-                  <span className="stat">
-                    <i className="fa-regular fa-file-lines" />{" "}
-                    {profile.stats.exercises} Exercises
-                  </span>
-                  <span className="dot">·</span>
-                  <span className="stat">
-                    <i className="fa-regular fa-lightbulb" />{" "}
-                    {profile.stats.solutions} Solutions
-                  </span>
-                  <span className="dot">·</span>
-                  <span className="stat">
-                    <i className="fa-regular fa-bookmark" />{" "}
-                    {profile.stats.saved} Saved
-                  </span>
                 </div>
               </div>
             </div>
