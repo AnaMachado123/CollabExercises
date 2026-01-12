@@ -69,7 +69,7 @@ export default function MyExercises() {
     const load = async () => {
       try {
         setLoading(true);
-        const data = await apiRequest("/exercises/mine");
+        const data = await apiRequest("/exercises/mine", { auth: true });
         setItems(Array.isArray(data) ? data : []);
       } catch (err) {
         console.warn("MyExercises endpoint not ready yet:", err?.message || err);

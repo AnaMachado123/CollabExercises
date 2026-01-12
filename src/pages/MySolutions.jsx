@@ -310,8 +310,12 @@ export default function MySolutions() {
               const subject = sol.subject || sol.exercise?.subject || "Subject";
               const difficulty = sol.difficulty || sol.exercise?.difficulty || "Difficulty";
 
-              const commentsCount = sol.commentsCount ?? sol.comments?.length ?? 0;
-              const filesCount = sol.filesCount ?? sol.files?.length ?? 0;
+              const commentsCount =
+                sol.exercise?.commentsCount ?? sol.exercise?.comments?.length ?? 0;
+
+              const filesCount =
+                sol.attachments?.length ?? 0; // ✅ solution files = attachments
+
 
               return (
                 <div className="mysol-card" key={solId}>
