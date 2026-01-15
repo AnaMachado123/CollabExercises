@@ -17,6 +17,9 @@ function Register() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
 
+  const API_BASE = import.meta.env.VITE_API_URL || "";
+
+
   // 🔹 submit handler
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -38,7 +41,7 @@ function Register() {
     }
 
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
